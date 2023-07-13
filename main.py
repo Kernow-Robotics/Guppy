@@ -6,9 +6,9 @@ MIN = 1000000
 MAX = 2000000
 TOTAL = 3000000
 
-led = Pin(25,Pin.OUT)
-pwmL = PWM(Pin(0))
-pwmR = PWM(Pin(1))
+# led = Pin(2,Pin.OUT)
+pwmL = PWM(Pin(2))
+pwmR = PWM(Pin(19))
 pwmL.freq(50)
 pwmR.freq(50)
 
@@ -23,7 +23,15 @@ def drive(left, right):
     pwmR.duty_ns(powerR)
 
 while True:
-    drive(50, 50)
+    # print('Forward')
+    # drive(50, 50)
+    # utime.sleep(1)
+    # print('Stop')
+    # drive(0, 0)
+    # utime.sleep(1)
+    print('Backward')
+    drive(-100, -100)
     utime.sleep(1)
-    drive(50, -50)
+    print('Stop')
+    drive(0, 0)
     utime.sleep(1)
