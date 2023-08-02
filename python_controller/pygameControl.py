@@ -9,7 +9,6 @@ def send_command_to_arduino(command):
     try:
         arduino_ip = "192.168.0.13"  # Replace this with the IP address of your Arduino
         arduino_port = 333  # Use any available port number (greater than 1023)
-
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((arduino_ip, arduino_port))
         sock.sendall(command.encode())
@@ -31,11 +30,11 @@ def keysToServos(keys):
         speeds[1]-=90
         speeds[2]-=90
     if keys[1]==1:
-        speeds[1]-=70
-        speeds[2]+=70
+        speeds[1]-=90
+        speeds[2]+=90
     if keys[3]==1:
-        speeds[1]+=70
-        speeds[2]-=70
+        speeds[1]+=90
+        speeds[2]-=90
     for speed in speeds:
         if speed > 180:
             speed = 180
