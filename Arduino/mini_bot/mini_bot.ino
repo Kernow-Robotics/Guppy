@@ -16,25 +16,47 @@ Servo servo3;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
 
 
-void sendCommand(const char* command, int timeout = 1000) {
+String readline() {
+  if (Serial1.available() > 1) {
+    //    Serial.println("reading");
+    String response = Serial1.readStringUntil('\n');
+    response.trim();
+    //    Serial.println(response);
+    //    char c[128];
+    //    response.toCharArray(c, sizeof(c));
+    //    Serial.println(c);
+    return response;
+  }
+  else {
+    return "";
+  }
+
+}
+void sendCommand(const char* command, int timeout = 1000, String endString = "OK") {
   unsigned long startTime = millis(); // Get the current time
   Serial.print("Sending: ");
   Serial.println(command);
   Serial1.println(command);
-  Serial.println();
 
-
-  Serial.println("Recieved: ");
-
-  while (Serial1.available() || (millis() - startTime) < timeout) {
-    if (Serial1.available()) {
-      char response = Serial1.read();
-      Serial.write(response); // Print the response to Serial Monitor
+  bool finished = false;
+  while (((millis() - startTime) < timeout) && (finished == false)) {
+    //    char* response;
+    //    response = readline();
+    String response = readline();
+    if (response.length() > 0) {
+      Serial.println(response);
+      if (response == endString) {
+        //        Serial.println("done :):):)");
+        finished = true;
+      }
     }
+
+    //    Serial.println(response);
+    delay(1);
   }
-  Serial.println();
+
   Serial.println("---------------------------");
-  Serial.println();
+
 }
 
 void parseServoCommands(char* servoCommands) {
@@ -44,11 +66,11 @@ void parseServoCommands(char* servoCommands) {
     char servoIndex = command[1]; // Extract the servo index (e.g., '0', '1', '2', '3')
     int servoPosition = atoi(&command[2]); // Extract the servo position
     // Limit the servo position to valid ranges (0 to 180 degrees)
-    Serial.print(command);
-    Serial.print("   ");
-    Serial.print(servoIndex);
-    Serial.print("   ");
-    Serial.println(servoPosition);
+//    Serial.print(command);
+//    Serial.print("   ");
+//    Serial.print(servoIndex);
+//    Serial.print("   ");
+//    Serial.println(servoPosition);
     servoPosition = constrain(servoPosition, 0, 180);
 
     switch (servoIndex) {
@@ -73,7 +95,7 @@ void parseServoCommands(char* servoCommands) {
 }
 
 void parseCommand(const char* command) {
-  Serial.println(command);
+//  Serial.println(command);
   // Check the command for servo control and angle
   if (command[0] == 'S') {
     int servoNum = command[1] - '0';
@@ -105,24 +127,24 @@ void setup() {
   servo1.attach(19);  // attaches the servo on pin 9 to the servo object
   servo2.attach(3);  // attaches the servo on pin 9 to the servo object
   servo3.attach(2);  // attaches the servo on pin 9 to the servo object
-  Serial.begin(9600); // Serial monitor for debugging
+  Serial.begin(115200); // Serial monitor for debugging
   Serial1.begin(115200); // ESP01 baud rate
   delay(2000);
 
   sendCommand("AT");
   sendCommand("AT+GMR");
-  sendCommand("AT+RST", 10000);
-  //  sendCommand("AT+RESTORE");
+  //  sendCommand("AT+RST", 10000, "ready");
+  sendCommand("AT+RESTORE", 10000, "ready");
 
 
   // Set the Wi-Fi mode to client (station) mode
-  sendCommand("AT+CWMODE?");
+//  sendCommand("AT+CWMODE?");
   sendCommand("AT+CWMODE=1");
-  sendCommand("AT+CWMODE?");
+//  sendCommand("AT+CWMODE?");
 
 
 
-  sendCommand("AT+CWLAP", 10000);
+//  sendCommand("AT+CWLAP", 10000);
 
 
   // Connect to your local Wi-Fi network
@@ -140,8 +162,6 @@ void setup() {
 
 }
 
-
-
 void loop() {
   // Check if there is any command received from the ESP01
   if (Serial1.available()) {
@@ -153,7 +173,7 @@ void loop() {
       String resultString = command.substring(colonIndex + 1);
       char c[50];
       resultString.toCharArray(c, sizeof(c));
-      Serial.println(c);
+//      Serial.println(c);
       parseServoCommands(c);
     }
 
