@@ -16,6 +16,31 @@ Servo servo3;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
 
 String recieved;
+int timenow = 0;
+
+void checkIncoming(bool debug);
+void sendit(const char* message, int timeout, bool debug);
+
+void myprint(String message = "") {
+  Serial.print(millis());
+  Serial.print("    ");
+  Serial.print(millis() - timenow);
+  Serial.print("    ");
+  Serial.println(message);
+}
+
+String getline(bool debug = true) {
+  String r = "";
+  if (Serial1.available()) {
+    //    Serial.print("reading:");
+    r = Serial1.readStringUntil('\n');
+    r.trim();
+    if (debug == true) {
+      myprint(r);
+    }
+  }
+  return r;
+}
 
 void parseServoCommands(String servoCommands) {
   int pos = 0;
@@ -52,6 +77,51 @@ void parseServoCommands(String servoCommands) {
   }
 }
 
+bool processline(String message) {
+  if (message.length() != 0) {
+    //----------------DATA PACKET CHECK
+    if (message.substring(0, 12) == "+CIPRECVDATA") {
+      myprint("Data Message triggered");
+      int colonIndex = message.indexOf(':');
+      if (colonIndex != -1) {
+        message = message.substring(colonIndex + 1);
+        Serial.println(message);
+        parseServoCommands(message);
+      }
+    }
+    //----------------DATA PRESENT CHECK TCP
+    //    if (message.substring(0, 4) == "+IPD") {
+    //      myprint("Data present!");
+    //      //        int colonIndex = r.indexOf(':');
+    //      //        if (colonIndex != -1) {
+    //      //          r = r.substring(colonIndex + 1);
+    //      sendit("AT+CIPRECVDATA=0,20", 1000, true);
+    //      //          parseServoCommands(r);
+    //      //        }
+    //  }
+    //----------------DATA PRESENT CHECK UDP
+    if (message.substring(0, 4) == "+IPD") {
+//      myprint("Data present!");
+      int colonIndex = message.indexOf(':');
+      if (colonIndex != -1) {
+        message = message.substring(colonIndex + 1);
+        //        sendit("AT+CIPRECVDATA=0,20", 1000, true);
+        parseServoCommands(message);
+        //        }
+      }
+    }
+    //----------------MESSAGE TERMINATOR CHECK
+    if (message == "OK" || message == "ERROR" || message == "ready") {
+      return false;
+    }
+    //--------------------------------
+  }
+  return true;
+}
+
+
+
+
 //void parseCommand(const char* recieved) {
 //  if (recieved[0] == 'S') {
 //    int servoNum = recieved[1] - '0';
@@ -75,92 +145,21 @@ void parseServoCommands(String servoCommands) {
 //  }
 //}
 
-void sendit(const char* message, int timeout = 1000, String endString = "OK", bool debug = true) {
+void sendit(const char* message, int timeout = 1000, bool debug = true) {
   unsigned long startTime = millis(); // Get the current time
   //  Serial.println(message);
   Serial1.println(message);
   bool finished = false;
   while (((millis() - startTime) < timeout) && (finished == false)) {
-    recieved = checkIncoming(debug);
-    if (recieved == endString) {
-      finished = true;
+    recieved = getline(debug);
+    if (processline(recieved) == false) {
+      break;
     }
     delay(1);
   }
   if (debug == true) {
-    Serial.println("-----------------");
+    myprint("----------------");
   }
-}
-
-String checkIncoming(bool debug = true) {
-  String r = "";
-  unsigned long startTime = millis(); // Get the current time
-  while (Serial1.available() && ((millis() - startTime) < 100)) {
-    //    Serial.print("reading:");
-    r = Serial1.readStringUntil('\n');
-    r.trim();
-    if (debug == true) {
-      Serial.print(millis());
-      Serial.print("    ");
-      Serial.println(r);
-    }
-    if (r.length() != 0) {
-      //----------------DATA PACKET CHECK
-      if (r.substring(0, 12) == "+CIPRECVDATA") {
-        Serial.println("Data Message");
-        int colonIndex = r.indexOf(':');
-        if (colonIndex != -1) {
-          r = r.substring(colonIndex + 1);
-          Serial.println(r);
-          parseServoCommands(r);
-        }
-      }
-
-
-    } else {
-      r = "";
-      //      Serial.println("blank message");
-    }
-
-
-
-
-    //    else if (messageback == "0,CONNECT") {
-    //      //      Serial.println("blerpyderp");
-    //      return "";
-    //    }
-    //    else if (messageback == "0,CLOSED") {
-    //      //      Serial.println("blerpyderp2.0");
-    //      return "";
-    //    } else {
-    //      Serial.println(messageback);
-    //      return messageback;
-    //    }
-
-
-  }
-  //  if (r != "") {
-  //    Serial.print(millis());
-  //    Serial.print(": ");
-  //    Serial.println(r);
-  //  }
-  return r;
-  //  else {
-  //    //    Serial.println("NOTHING");
-  //    return "";
-  //  }
-}
-
-void askfordata() {
-  sendit("AT+CIPRECVDATA=0,20", 3, "OK", true);
-  //----------------DATA WAITING CHECK
-  if (r.substring(0, 4) == "+IPD") {
-    Serial.println("Data waiting");
-    sendit("AT+CIPRECVDATA=0,20", 3, "OK", true);
-  }
-  //  recieved = checkIncoming(false);
-  //  recieved = checkIncoming(false);
-  //  recieved = checkIncoming(false);
 }
 
 void setup() {
@@ -177,8 +176,8 @@ void setup() {
   //---------------------------------WIFI INITIALISATION-----------------------------
   sendit("AT");
   sendit("AT+GMR");
-  //  sendit("AT+RST", 10000, "ready");
-  sendit("AT+RESTORE", 10000, "ready");
+  //  sendit("AT+RST", 10000);
+  sendit("AT+RESTORE", 10000);
   //  sendit("AT+CWMODE?");
   sendit("AT+CWMODE=1");// Set the Wi-Fi mode to client (station) mode
   //  sendit("AT+CWMODE?");
@@ -189,7 +188,11 @@ void setup() {
 
   //---------------------------------ICP/IP INITIALISATION-----------------------------
   sendit("AT+CIPMUX=1");   // Enable multiple connections
-  sendit("AT+CIPSERVER=1");    // Start tcp/ip server
+  sendit("AT+CIPSTART=1,\"UDP\",\"0.0.0.0\",333,333,2");
+
+  //  sendit("AT+CIPSERVER=1");    // Start tcp/ip server
+  //  sendit("AT+CIPMUX=1");
+
   //  sendit("AT+CIPDINFO=1");
   //  sendit("AT+CIPSTO=0");    // Set timeout to 0 seconds
   //  sendit("AT+CIPTCPOPT=5,-1,1,0,0");
@@ -202,13 +205,17 @@ void setup() {
   //---------------------------------PRINT IP ADDRESS-----------------------------
 
   sendit("AT+CIFSR");    // Checks the IP address of the esp
-  Serial.println("DONE");
+  myprint("DONE");
 }
 
 void loop() {
-  askfordata();
+  delay(1);
+  timenow = millis();
+  //  myprint("looping");
+//  String x = getline(true);
+    bool x = processline(getline(false));
 
-  delay(100);
+  //  delay(100);
   //  if (Serial1.available()) {
   //    //        Serial.println("looping");
   //    String recieved = "";

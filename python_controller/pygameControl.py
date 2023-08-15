@@ -15,8 +15,8 @@ class Robot(object):
         """
         self.arduino_ip = "192.168.0.15"  # Replace this with the IP address of your Arduino
         self.arduino_port = 333  # Use any available port number (greater than 1023)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.arduino_ip, self.arduino_port))
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # self.sock.connect((self.arduino_ip, self.arduino_port))
         self.speeds = [90,90,90,90]
         self.messageNumber = 0
         self.lasttime = time.time()
@@ -58,7 +58,7 @@ class Robot(object):
         try:
             # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # self.sock.connect((self.arduino_ip, self.arduino_port))
-            self.sock.sendall(command.encode())
+            self.sock.sendto(command.encode(), (self.arduino_ip, self.arduino_port))
             # self.sock.close()
 
         except Exception as e:
@@ -104,7 +104,7 @@ def main():
         screen.fill(background_colour)
         pygame.display.update()
         pygame.display.flip()
-        time.sleep(0.3)
+        time.sleep(0.02)
 
     pygame.quit()
 
