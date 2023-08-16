@@ -17,9 +17,8 @@ Servo servo3;  // create servo object to control a servo
 
 String recieved;
 int timenow = 0;
+bool debug = false;
 
-void checkIncoming(bool debug);
-void sendit(const char* message, int timeout, bool debug);
 
 void myprint(String message = "") {
   Serial.print(millis());
@@ -29,7 +28,7 @@ void myprint(String message = "") {
   Serial.println(message);
 }
 
-String getline(bool debug = true) {
+String getline() {
   String r = "";
   if (Serial1.available()) {
     //    Serial.print("reading:");
@@ -101,7 +100,7 @@ bool processline(String message) {
     //  }
     //----------------DATA PRESENT CHECK UDP
     if (message.substring(0, 4) == "+IPD") {
-//      myprint("Data present!");
+      //      myprint("Data present!");
       int colonIndex = message.indexOf(':');
       if (colonIndex != -1) {
         message = message.substring(colonIndex + 1);
@@ -145,13 +144,13 @@ bool processline(String message) {
 //  }
 //}
 
-void sendit(const char* message, int timeout = 1000, bool debug = true) {
+void sendit(const char* message, int timeout = 1000) {
   unsigned long startTime = millis(); // Get the current time
   //  Serial.println(message);
   Serial1.println(message);
   bool finished = false;
   while (((millis() - startTime) < timeout) && (finished == false)) {
-    recieved = getline(debug);
+    recieved = getline();
     if (processline(recieved) == false) {
       break;
     }
@@ -163,7 +162,7 @@ void sendit(const char* message, int timeout = 1000, bool debug = true) {
 }
 
 void setup() {
-
+  debug = false;
   servo0.attach(18);  // attaches the servo on pin 9 to the servo object
   servo1.attach(19);  // attaches the servo on pin 9 to the servo object
   servo2.attach(3);  // attaches the servo on pin 9 to the servo object
@@ -171,8 +170,12 @@ void setup() {
   Serial.begin(115200); // Serial monitor for debugging
   Serial1.begin(115200); // ESP01 baud rate
   delay(2000);
-  Serial.println("CONNECTING TO WIFI");
+  if (debug == true) {
+    myprint("CONNECTING TO WIFI");
+  }
   //  sendit("+++");
+
+  //
   //---------------------------------WIFI INITIALISATION-----------------------------
   sendit("AT");
   sendit("AT+GMR");
@@ -205,15 +208,18 @@ void setup() {
   //---------------------------------PRINT IP ADDRESS-----------------------------
 
   sendit("AT+CIFSR");    // Checks the IP address of the esp
-  myprint("DONE");
+  if (debug) {
+    myprint("DONE");
+  }
+  debug = false;
 }
 
 void loop() {
   delay(1);
   timenow = millis();
   //  myprint("looping");
-//  String x = getline(true);
-    bool x = processline(getline(false));
+  //  String x = getline(true);
+  bool x = processline(getline());
 
   //  delay(100);
   //  if (Serial1.available()) {

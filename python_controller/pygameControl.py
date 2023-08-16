@@ -30,11 +30,11 @@ class Robot(object):
             self.speeds[1]-=90
             self.speeds[2]-=90
         if keys[1]==1:
-            self.speeds[1]-=90
-            self.speeds[2]+=90
+            self.speeds[1]-=70
+            self.speeds[2]+=70
         if keys[3]==1:
-            self.speeds[1]+=90
-            self.speeds[2]-=90
+            self.speeds[1]+=70
+            self.speeds[2]-=70
         for speed in self.speeds:
             if speed > 180:
                 speed = 180
@@ -104,7 +104,7 @@ def main():
         screen.fill(background_colour)
         pygame.display.update()
         pygame.display.flip()
-        time.sleep(0.02)
+        time.sleep(0.01)
 
     pygame.quit()
 
