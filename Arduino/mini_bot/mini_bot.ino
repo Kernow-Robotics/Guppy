@@ -21,11 +21,13 @@ bool debug = false;
 
 
 void myprint(String message = "") {
-  Serial.print(millis());
-  Serial.print("    ");
-  Serial.print(millis() - timenow);
-  Serial.print("    ");
-  Serial.println(message);
+  if (debug) {
+    Serial.print(millis());
+    Serial.print("    ");
+    Serial.print(millis() - timenow);
+    Serial.print("    ");
+    Serial.println(message);
+  }
 }
 
 String getline() {
@@ -34,9 +36,7 @@ String getline() {
     //    Serial.print("reading:");
     r = Serial1.readStringUntil('\n');
     r.trim();
-    if (debug == true) {
-      myprint(r);
-    }
+    myprint(r);
   }
   return r;
 }
@@ -84,7 +84,7 @@ bool processline(String message) {
       int colonIndex = message.indexOf(':');
       if (colonIndex != -1) {
         message = message.substring(colonIndex + 1);
-        Serial.println(message);
+        myprint(message);
         parseServoCommands(message);
       }
     }
@@ -156,13 +156,11 @@ void sendit(const char* message, int timeout = 1000) {
     }
     delay(1);
   }
-  if (debug == true) {
-    myprint("----------------");
-  }
+  myprint("----------------");
 }
 
 void setup() {
-  debug = false;
+  debug = true;
   servo0.attach(18);  // attaches the servo on pin 9 to the servo object
   servo1.attach(19);  // attaches the servo on pin 9 to the servo object
   servo2.attach(3);  // attaches the servo on pin 9 to the servo object
@@ -170,9 +168,7 @@ void setup() {
   Serial.begin(115200); // Serial monitor for debugging
   Serial1.begin(115200); // ESP01 baud rate
   delay(2000);
-  if (debug == true) {
-    myprint("CONNECTING TO WIFI");
-  }
+  myprint("CONNECTING TO WIFI");
   //  sendit("+++");
 
   //
@@ -208,9 +204,7 @@ void setup() {
   //---------------------------------PRINT IP ADDRESS-----------------------------
 
   sendit("AT+CIFSR");    // Checks the IP address of the esp
-  if (debug) {
-    myprint("DONE");
-  }
+  myprint("DONE");
   debug = false;
 }
 
