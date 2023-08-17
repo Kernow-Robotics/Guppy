@@ -204,8 +204,8 @@ void setup() {
   //---------------------------------PRINT IP ADDRESS-----------------------------
 
   sendit("AT+CIFSR");    // Checks the IP address of the esp
-  myprint("DONE");
-  debug = false;
+  myprint("READY TO ROBOT");
+//  debug = false;
 }
 
 void loop() {
