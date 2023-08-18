@@ -22,29 +22,29 @@ class Robot(object):
         self.lasttime = time.time()
 
     def keysToServos(self, keys):
-        self.speeds = [90,90,90,90]
+        self.speeds = [0,0,0,0]
         if keys[0]==1:
-            self.speeds[1]+=90
-            self.speeds[2]+=90
+            self.speeds[0]+=255
+            self.speeds[1]+=255
         if keys[2]==1:
-            self.speeds[1]-=90
-            self.speeds[2]-=90
+            self.speeds[0]-=255
+            self.speeds[1]-=255
         if keys[1]==1:
-            self.speeds[1]-=70
-            self.speeds[2]+=70
+            self.speeds[0]+=255
+            self.speeds[1]-=255
         if keys[3]==1:
-            self.speeds[1]+=70
-            self.speeds[2]-=70
-        for speed in self.speeds:
-            if speed > 180:
-                speed = 180
-            if speed < 0:
-                speed = 0
+            self.speeds[0]-=255
+            self.speeds[1]+=255
+        # for speed in self.speeds:
+        #     if speed > 180:
+        #         speed = 180
+        #     if speed < 0:
+        #         speed = 0
         print(self.speeds)
         self.set_servo_speeds(self.speeds[0], self.speeds[1], self.speeds[2], self.speeds[3])
 
     def set_servo_speeds(self, speed0, speed1, speed2, speed3):
-        command = f"S0{speed0};S1{speed1+1};S2{180-(speed2-3)};S3{speed3}\n"
+        command = f"S0{speed0};S1{speed1*0.80};S2{speed2};S3{speed3}\n"
         # command = f"S0{speed0};S1{speed1+1};S2{180-(speed2-3)};S3{speed3};{self.messageNumber}\n"
         self.messageNumber+=1
         # self.sock.close()
@@ -104,7 +104,7 @@ def main():
         screen.fill(background_colour)
         pygame.display.update()
         pygame.display.flip()
-        time.sleep(0.01)
+        time.sleep(0.02)
 
     pygame.quit()
 
