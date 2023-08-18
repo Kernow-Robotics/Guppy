@@ -6,19 +6,60 @@
   servo2.attach(3);  // attaches the servo on pin 9 to the servo object
   servo3.attach(2);  // attaches the servo on pin 9 to the servo object
 */
+int pinServo0 = 2;
+int pinServo1 = 3;
+int pinServo2 = 4;
+int pinServo3 = 5;
+int pinM0a = 8;
+int pinM0b = 9;
+int pinM1a = 10;
+int pinM1b = 11;
 
 #include <Servo.h>
 
-Servo servo0;  // create servo object to control a servo
-Servo servo1;  // create servo object to control a servo
-Servo servo2;  // create servo object to control a servo
-Servo servo3;  // create servo object to control a servo
-// twelve servo objects can be created on most boards
+Servo servo0;
+Servo servo1;
+Servo servo2;
+Servo servo3;
 
 String recieved;
 int timenow = 0;
 bool debug = false;
 
+void m0Power(int power = 0) {
+  if (power == 0) {
+    digitalWrite(pinM0a, LOW);
+    digitalWrite(pinM0b, LOW);
+  }
+  if (power > 0) {
+    analogWrite(pinM0a, power);
+    digitalWrite(pinM0b, LOW);
+  }
+  if (power < 0) {
+    digitalWrite(pinM0a, LOW);
+    analogWrite(pinM0b, -1*power);
+  }
+}
+
+void m1Power(int power = 0) {
+  if (power == 0) {
+    digitalWrite(pinM1a, LOW);
+    digitalWrite(pinM1b, LOW);
+  }
+  if (power > 0) {
+    analogWrite(pinM1a, power);
+    digitalWrite(pinM1b, LOW);
+  }
+  if (power < 0) {
+    digitalWrite(pinM1a, LOW);
+    analogWrite(pinM1b, -1*power);
+  }
+}
+
+void motorDrive(int power0 = 0, int power1 = 0) {
+  m0Power(power0);
+  m1Power(power1);
+}
 
 void myprint(String message = "") {
   if (debug) {
@@ -41,27 +82,53 @@ String getline() {
   return r;
 }
 
+//void parseServoCommands(String servoCommands) {
+//  int pos = 0;
+//  while ((pos = servoCommands.indexOf(";")) != -1) {
+//    String token = servoCommands.substring(0, pos);
+//    //    Serial.println(token);
+//    char servoIndex = token[1]; // Extract the servo index (e.g., '0', '1', '2', '3')
+//    int servoPosition = token.substring(2).toInt(); // Extract the servo position
+//    if (servoPosition > 180) {
+//      servoPosition = 180;
+//    }
+//    if (servoPosition < 0) {
+//      servoPosition = 0;
+//    }
+//    //    Serial.println(servoIndex);
+//    //    Serial.println(servoPosition);
+//    switch (servoIndex) {
+//      case '0':
+//        servo0.write(servoPosition);
+//        break;
+//      case '1':
+//        servo1.write(servoPosition);
+//        break;
+//      case '2':
+//        servo2.write(servoPosition);
+//        break;
+//      case '3':
+//        servo3.write(servoPosition);
+//        break;
+//      default:
+//        break;
+//    }
+//    servoCommands = servoCommands.substring(pos + 1);
+//  }
+//}
+
 void parseServoCommands(String servoCommands) {
   int pos = 0;
   while ((pos = servoCommands.indexOf(";")) != -1) {
     String token = servoCommands.substring(0, pos);
-    //    Serial.println(token);
     char servoIndex = token[1]; // Extract the servo index (e.g., '0', '1', '2', '3')
     int servoPosition = token.substring(2).toInt(); // Extract the servo position
-    if (servoPosition > 180) {
-      servoPosition = 180;
-    }
-    if (servoPosition < 0) {
-      servoPosition = 0;
-    }
-    //    Serial.println(servoIndex);
-    //    Serial.println(servoPosition);
     switch (servoIndex) {
       case '0':
-        servo0.write(servoPosition);
+        m0Power(servoPosition);
         break;
       case '1':
-        servo1.write(servoPosition);
+        m1Power(servoPosition);
         break;
       case '2':
         servo2.write(servoPosition);
@@ -118,32 +185,6 @@ bool processline(String message) {
   return true;
 }
 
-
-
-
-//void parseCommand(const char* recieved) {
-//  if (recieved[0] == 'S') {
-//    int servoNum = recieved[1] - '0';
-//    int angle = atoi(&recieved[2]);
-//    switch (servoNum) {
-//      case 0:
-//        servo0.write(angle);
-//        break;
-//      case 1:
-//        servo1.write(angle);
-//        break;
-//      case 2:
-//        servo2.write(angle);
-//        break;
-//      case 3:
-//        servo3.write(angle);
-//        break;
-//      default:
-//        break;
-//    }
-//  }
-//}
-
 void sendit(const char* message, int timeout = 1000) {
   unsigned long startTime = millis(); // Get the current time
   //  Serial.println(message);
@@ -161,10 +202,14 @@ void sendit(const char* message, int timeout = 1000) {
 
 void setup() {
   debug = true;
-  servo0.attach(18);  // attaches the servo on pin 9 to the servo object
-  servo1.attach(19);  // attaches the servo on pin 9 to the servo object
-  servo2.attach(3);  // attaches the servo on pin 9 to the servo object
-  servo3.attach(2);  // attaches the servo on pin 9 to the servo object
+  servo0.attach(pinServo0);  // attaches the servo on pin 9 to the servo object
+  servo1.attach(pinServo1);  // attaches the servo on pin 9 to the servo object
+  servo2.attach(pinServo2);  // attaches the servo on pin 9 to the servo object
+  servo3.attach(pinServo3);  // attaches the servo on pin 9 to the servo object
+  pinMode(pinM0a, OUTPUT);
+  pinMode(pinM0b, OUTPUT);
+  pinMode(pinM1a, OUTPUT);
+  pinMode(pinM1b, OUTPUT);
   Serial.begin(115200); // Serial monitor for debugging
   Serial1.begin(115200); // ESP01 baud rate
   delay(2000);
@@ -205,15 +250,21 @@ void setup() {
 
   sendit("AT+CIFSR");    // Checks the IP address of the esp
   myprint("READY TO ROBOT");
-//  debug = false;
+  //  debug = false;
 }
 
 void loop() {
   delay(1);
   timenow = millis();
-  //  myprint("looping");
-  //  String x = getline(true);
   bool x = processline(getline());
+//motorDrive(255,255);
+//delay(1000);
+//motorDrive(0,0);
+//delay(1000);
+//motorDrive(-255,-255);
+//delay(1000);
+//motorDrive(0,0);
+//delay(1000);
 
   //  delay(100);
   //  if (Serial1.available()) {
