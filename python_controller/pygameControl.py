@@ -44,7 +44,7 @@ class Robot(object):
         self.set_servo_speeds(self.speeds[0], self.speeds[1], self.speeds[2], self.speeds[3])
 
     def set_servo_speeds(self, speed0, speed1, speed2, speed3):
-        command = f"S0{speed0};S1{speed1*0.80 /};S2{speed2};S3{speed3}\n"
+        command = f"S0{speed0};S1{speed1*1.00};S2{speed2};S3{speed3}\n"
         # command = f"S0{speed0};S1{speed1+1};S2{180-(speed2-3)};S3{speed3};{self.messageNumber}\n"
         self.messageNumber+=1
         # self.sock.close()
