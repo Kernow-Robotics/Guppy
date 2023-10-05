@@ -13,7 +13,7 @@ class Robot(object):
         """
         Runs once when object is initialised
         """
-        self.arduino_ip = "192.168.0.15"  # Replace this with the IP address of your Arduino
+        self.arduino_ip = "192.168.0.106"  # Replace this with the IP address of your Arduino
         self.arduino_port = 333  # Use any available port number (greater than 1023)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # self.sock.connect((self.arduino_ip, self.arduino_port))
