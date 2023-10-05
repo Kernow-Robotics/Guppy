@@ -82,41 +82,6 @@ String getline() {
   return r;
 }
 
-//void parseServoCommands(String servoCommands) {
-//  int pos = 0;
-//  while ((pos = servoCommands.indexOf(";")) != -1) {
-//    String token = servoCommands.substring(0, pos);
-//    //    Serial.println(token);
-//    char servoIndex = token[1]; // Extract the servo index (e.g., '0', '1', '2', '3')
-//    int servoPosition = token.substring(2).toInt(); // Extract the servo position
-//    if (servoPosition > 180) {
-//      servoPosition = 180;
-//    }
-//    if (servoPosition < 0) {
-//      servoPosition = 0;
-//    }
-//    //    Serial.println(servoIndex);
-//    //    Serial.println(servoPosition);
-//    switch (servoIndex) {
-//      case '0':
-//        servo0.write(servoPosition);
-//        break;
-//      case '1':
-//        servo1.write(servoPosition);
-//        break;
-//      case '2':
-//        servo2.write(servoPosition);
-//        break;
-//      case '3':
-//        servo3.write(servoPosition);
-//        break;
-//      default:
-//        break;
-//    }
-//    servoCommands = servoCommands.substring(pos + 1);
-//  }
-//}
-
 void parseServoCommands(String servoCommands) {
   int pos = 0;
   while ((pos = servoCommands.indexOf(";")) != -1) {
@@ -226,7 +191,8 @@ void setup() {
   sendit("AT+CWMODE=1");// Set the Wi-Fi mode to client (station) mode
   //  sendit("AT+CWMODE?");
   //  sendit("AT+CWLAP", 10000);
-  sendit("AT+CWJAP=\"SKYPNVF2\",\"FD3c4LEP3EAk\"", 10000);
+//  sendit("AT+CWJAP=\"SKYPNVF2\",\"FD3c4LEP3EAk\"", 10000);
+  sendit("AT+CWJAP=\"Robotics Lab\",\"killallhumans\"", 10000);
   //  sendit("AT+CIPFWVER?",60000);
   //  sendit("AT+CIUPDATE",60000);
 
