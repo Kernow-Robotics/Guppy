@@ -6,6 +6,8 @@
   servo2.attach(3);  // attaches the servo on pin 9 to the servo object
   servo3.attach(2);  // attaches the servo on pin 9 to the servo object
 */
+
+
 int pinServo0 = 2;
 int pinServo1 = 3;
 int pinServo2 = 4;
@@ -23,36 +25,41 @@ Servo servo2;
 Servo servo3;
 
 String recieved;
-int timenow = 0;
+int timenow = 0;wad
 bool debug = false;
 
 void m0Power(int power = 0) {
+  Serial.print("m0 power =: ");
+  Serial.println(power);
   if (power == 0) {
     digitalWrite(pinM0a, LOW);
     digitalWrite(pinM0b, LOW);
   }
-  if (power > 0) {
-    analogWrite(pinM0a, power);
+  else if (power > 0) {
     digitalWrite(pinM0b, LOW);
+    analogWrite(pinM0a, power);
   }
-  if (power < 0) {
+  else if (power < 0) {
     digitalWrite(pinM0a, LOW);
-    analogWrite(pinM0b, -1*power);
+    analogWrite(pinM0b, abs(power));
   }
 }
 
 void m1Power(int power = 0) {
+  Serial.print("m1 power =: ");
+  Serial.println(power);
   if (power == 0) {
     digitalWrite(pinM1a, LOW);
     digitalWrite(pinM1b, LOW);
   }
-  if (power > 0) {
-    analogWrite(pinM1a, power);
+  else if (power > 0) {
     digitalWrite(pinM1b, LOW);
+    analogWrite(pinM1a, power);
   }
-  if (power < 0) {
+  else if (power <+
+  0) {
     digitalWrite(pinM1a, LOW);
-    analogWrite(pinM1b, -1*power);
+    analogWrite(pinM1b, abs(power));
   }
 }
 
@@ -220,7 +227,7 @@ void setup() {
 }
 
 void loop() {
-  delay(1);
+  delay(5);
   timenow = millis();
   bool x = processline(getline());
 //motorDrive(255,255);
