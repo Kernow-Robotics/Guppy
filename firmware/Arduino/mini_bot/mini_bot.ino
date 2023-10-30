@@ -25,7 +25,7 @@ Servo servo2;
 Servo servo3;
 
 String recieved;
-int timenow = 0;wad
+int timenow = 0;
 bool debug = false;
 
 void m0Power(int power = 0) {
@@ -202,7 +202,7 @@ void setup() {
   //  sendit("AT+CIPFWVER?",60000);
   //  sendit("AT+CIUPDATE",60000);
 
-  //---------------------------------ICP/IP INITIALISATION-----------------------------
+  //---------------------------------ICP/IP OR UDP INITIALISATION-----------------------------
   sendit("AT+CIPMUX=1");   // Enable multiple connections
   sendit("AT+CIPSTART=1,\"UDP\",\"0.0.0.0\",333,333,2");
 
