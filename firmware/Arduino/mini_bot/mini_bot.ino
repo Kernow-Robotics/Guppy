@@ -56,8 +56,7 @@ void m1Power(int power = 0) {
     digitalWrite(pinM1b, LOW);
     analogWrite(pinM1a, power);
   }
-  else if (power <+
-  0) {
+  else if (power < 0) {
     digitalWrite(pinM1a, LOW);
     analogWrite(pinM1b, abs(power));
   }
