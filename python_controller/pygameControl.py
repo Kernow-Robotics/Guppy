@@ -13,7 +13,7 @@ class Robot(object):
         """
         Runs once when object is initialised
         """
-        self.arduino_ip = "192.168.0.105"  # Replace this with the IP address of your Arduino
+        self.arduino_ip = "192.168.0.15"  # Replace this with the IP address of your Arduino
         self.arduino_port = 333  # Use any available port number (greater than 1023)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # self.sock.connect((self.arduino_ip, self.arduino_port))
@@ -22,18 +22,18 @@ class Robot(object):
         self.lasttime = time.time()
 
     def keysToServos(self, keys):
-        powerstep = 127
+        powerstep = 255
         self.speeds = [0,0,0,0]
-        if keys[0]==1:
+        if keys[2]==1:
             self.speeds[0]+=powerstep
             self.speeds[1]+=powerstep
-        if keys[2]==1:
+        if keys[0]==1:
             self.speeds[0]-=powerstep
             self.speeds[1]-=powerstep
-        if keys[1]==1:
+        if keys[3]==1:
             self.speeds[0]+=powerstep
             self.speeds[1]-=powerstep
-        if keys[3]==1:
+        if keys[1]==1:
             self.speeds[0]-=powerstep
             self.speeds[1]+=powerstep
         # for speed in self.speeds:
