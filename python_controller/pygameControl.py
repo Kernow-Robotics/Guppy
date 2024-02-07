@@ -6,7 +6,7 @@ import socket
 
 class Robot(object):
     """
-    a class to do a job
+    a class for creating instances of robots for comms
     """
 
     def __init__(self):
