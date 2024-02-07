@@ -13,10 +13,12 @@ class Robot(object):
         """
         Runs once when object is initialised
         """
-        self.arduino_ip = "192.168.0.15"  # Replace thwsis with the IP address of your Arduino
+        self.arduino_ip = "192.168.0.115"  # Replace thwsis with the IP address of your Arduino
+        # self.arduino_ip = "172.20.10.4"  # Replace thwsis with the IP address of your Arduino
         self.arduino_port = 333  # Use any available port number (greater than 1023)
+        # self.arduino_port = 333  # Use any available port number (greater than 1023)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1024)
+        # self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 2048)
         # self.sock.connect((self.arduino_ip, self.arduino_port))
         self.speeds = [90,90,90,90]
         self.messageNumber = 0
@@ -60,6 +62,7 @@ class Robot(object):
         try:
             # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # self.sock.connect((self.arduino_ip, self.arduino_port))
+            print(command)
             self.sock.sendto(command.encode(), (self.arduino_ip, self.arduino_port))
             # self.sock.close()
 
@@ -106,7 +109,7 @@ def main():
         # screen.fill(background_colour)
         # pygame.display.update()
         # pygame.display.flip()
-        time.sleep(0.04)
+        time.sleep(0.01)
 
     pygame.quit()
 
