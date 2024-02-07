@@ -176,34 +176,38 @@ void sendit(String message, int timeout = 10000) {
 
 void initWiFi(String ssid, String password) {
   Serial1.begin(115200); // ESP01 baud rate
+  Serial1.setTimeout(1);
   delay(500);
   debugPrint("CONNECTING TO WIFI");
   //---------------------------------WIFI INITIALISATION-----------------------------
-//  sendit("AT");                                                 //
-//  delay(1000);
-//  sendit("AT+GMR");                                             //
-//  delay(1000);
-//  sendit("AT+RESTORE");                                  //
-//  delay(1000);
-  sendit("AT+CWMODE=1");                                        // Set the Wi-Fi mode to client (station) mode
+  //  sendit("AT");                                                 //
+  //  delay(1000);
+  //  sendit("AT+GMR");                                             //
+  //  delay(1000);
+  //    sendit("AT+RESTORE");                                  //
+  //  delay(1000);
+  sendit("AT+CWMODE=1");    // Set the Wi-Fi mode to client (station) mode
   delay(1000);
   sendit("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 20000);
+
+  sendit("AT+CWHOSTNAME=\"Guppy Robot\"");
+
   //---------------------------------ICP/IP OR UDP INITIALISATION-----------------------------
   sendit("AT+CIPMUX=1");                                        // Enable multiple connections
   //  sendit("AT+CIPSTART=1,\"UDP\",\"0.0.0.0\",666,333,2");
-//  sendit("AT+CIPSTART=4,\"UDP\",\"239.255.255.250\",1900,1900,0");
+  //  sendit("AT+CIPSTART=4,\"UDP\",\"239.255.255.250\",1900,1900,0");
   sendit("AT+CIPSTART=4,\"UDP\",\"255.255.255.255\",12345,333,0");
-  
-  sendit("AT+CIPRECVMODE=1");                                   // Set passive recieve mode
+
+  sendit("AT+CIPRECVMODE=0");                                   // Set passive recieve mode
   //---------------------------------PRINT IP ADDRESS-----------------------------
   sendit("AT+CIFSR");                                           // Checks the IP address of the esp
   //---------------------------------UNUSED COMMANDS-----------------------------
   //  sendit("AT+RST", 10000);
   //  sendit("AT+CWMODE?");
   //  sendit("AT+CWMODE?");
-  //  sendit("AT+CWLAP", 10000);
-  //  sendit("AT+CIPFWVER?",60000);
-  //  sendit("AT+CIUPDATE", 60000);
+  //    sendit("AT+CWLAP", 10000);   //List available networks
+  //    sendit("AT+CIPFWVER?",60000);
+  //    sendit("AT+CIUPDATE", 60000); //Auto update firmware
   //  sendit("AT+CIPSERVER=1");    // Start tcp/ip server
   //  sendit("AT+CIPMUX=1");
   //  sendit("AT+CIPDINFO=1");
@@ -244,12 +248,12 @@ void sendSSDP() {
 }
 
 void pingNetwork(int x) {
-//  sendit("AT+CIPSTART=4,\"UDP\",\"255.255.255.255\",12345,333,0");
-//  String announcement = "Hello from Guppy 1.3 " + ipAddress + " " + String(millis());
+  //  sendit("AT+CIPSTART=4,\"UDP\",\"255.255.255.255\",12345,333,0");
+  //  String announcement = "Hello from Guppy 1.3 " + ipAddress + " " + String(millis());
   String announcement = "Hello from Guppy 1.3 " + ipAddress + " " + String(x);
   sendit("AT+CIPSEND=4," + String(announcement.length() + 2));
   sendit(announcement);
-//  sendit("AT+CIPCLOSE");
+  //  sendit("AT+CIPCLOSE");
 }
 
 void setup() {
@@ -263,9 +267,9 @@ void setup() {
   pinMode(pinM1a, OUTPUT);
   pinMode(pinM1b, OUTPUT);
   Serial.begin(115200); // Serial monitor for debugging
-  initWiFi("SKYPNVF2", "FD3c4LEP3EAk");
-//  initWiFi("Robotics Lab", "killallhumans");
-//  initWiFi("Ben\'s iPhone", "aaabbbccc1");
+  //  initWiFi("SKYPNVF2", "FD3c4LEP3EAk");
+  initWiFi("Robotics Lab", "killallhumans");
+  //    initWiFi("Ben’s iPhone", "aaabbbccc1");
   debugPrint("READY TO ROBOT");
   delay(3000);
   //  debug = false;
@@ -276,16 +280,21 @@ int startTime = 0;
 int lastStartTime = 0;
 int x = 1;
 void loop() {
-  
-  pingNetwork(x);
-  x++;
-//  delay(100);
+
+  //  sendit("AT+CIPSTATUS");
+  //      pingNetwork(x);
+  //      x++;
+  //      delay(10);
 
   //  sendSSDP();
   //  startTime = millis();
   //  delay(5);
-  ////  Serial.println("loop");
-  //  String incommingData=getline();
-  //  bool x = processline(incommingData);
+  //    Serial.println("loop");
+  String incommingData = getline();
+  bool x = processline(incommingData);
+  //  delay(1);
+
+  //  sendit("AT+GMR");
+  //  delay(1000);
 
 }
