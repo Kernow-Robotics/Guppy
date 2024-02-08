@@ -256,6 +256,14 @@ void pingNetwork(int x) {
   //  sendit("AT+CIPCLOSE");
 }
 
+void initNRF24L01(){
+
+}
+
+void readNRF24L01(){
+
+}
+
 void setup() {
   debug = true;
   servo0.attach(pinServo0);  // attaches the servo on pin 9 to the servo object
