@@ -17,13 +17,13 @@ class Guppy(object):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 2048)
         # self.sock.connect((self.arduino_ip, self.arduino_port))
-        self.speeds = [90,90,90,90]
+        self.speeds = [0,0,0,0,0,0]
         self.messageNumber = 0
         self.lasttime = time.time()
 
     def keysToServos(self, keys):
         powerstep = 64
-        self.speeds = [0,0,0,0]
+        self.speeds = [0,0,0,0,0,0]
         if keys[0]==1:
             self.speeds[0]+=powerstep
             self.speeds[1]+=powerstep
@@ -42,10 +42,10 @@ class Guppy(object):
         #     if speed < 0:
         #         speed = 0
         print(self.speeds)
-        self.set_servo_speeds(self.speeds[0], self.speeds[1], self.speeds[2], self.speeds[3])
+        self.set_servo_speeds(self.speeds[0], self.speeds[1], self.speeds[2], self.speeds[3], self.speeds[4], self.speeds[5])
 
-    def set_servo_speeds(self, speed0, speed1, speed2, speed3):
-        command = f"S0{speed0};S1{speed1};S2{speed2};S3{speed3}\n"
+    def set_servo_speeds(self, speed0, speed1, speed2, speed3, speed4, speed5):
+        command = f"S0{speed0};S1{speed1};S2{speed2};S3{speed3};S4{speed4};S5{speed5}\n"
         # command = f"S0{speed0};S1{speed1+1};S2{180-(speed2-3)};S3{speed3};{self.messageNumber}\n"
         self.messageNumber+=1
         # self.sock.close()
