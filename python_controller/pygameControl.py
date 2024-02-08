@@ -6,7 +6,7 @@ import socket
 
 class Robot(object):
     """
-    a class for creating instances of robots for comms
+    a class for creating instances of robots for comms using radio
     """
 
     def __init__(self):
