@@ -2,8 +2,8 @@ int pinServo0 = 2;
 int pinServo1 = 3;
 int pinServo2 = 4;
 int pinServo3 = 5;
-int pinM0a = 8;
-int pinM0b = 9;
+int pinM0a = 9;
+int pinM0b = 8;
 int pinM1a = 10;
 int pinM1b = 11;
 
@@ -256,12 +256,33 @@ void pingNetwork(int x) {
   //  sendit("AT+CIPCLOSE");
 }
 
-void initNRF24L01(){
+void initNRF24L01() {
 
 }
 
-void readNRF24L01(){
+void readNRF24L01() {
 
+}
+
+void motorDemo(int waitTimeOn, int waitTimeOff){
+//  motorDrive(0,0);
+//  delay(waitTimeOff);
+//  motorDrive(255, 0);
+//  delay(waitTimeOn);
+//  motorDrive(0,0);
+//  delay(waitTimeOff);
+//  motorDrive(0, 255);
+//  delay(waitTimeOn);
+//  motorDrive(0,0);
+//  delay(waitTimeOff);
+  motorDrive(255, 255);
+  delay(waitTimeOn);
+  motorDrive(0,0);
+  delay(waitTimeOff);
+  motorDrive(-255, -255);
+  delay(waitTimeOn);
+  motorDrive(0,0);
+  delay(waitTimeOff);
 }
 
 void setup() {
@@ -276,10 +297,10 @@ void setup() {
   pinMode(pinM1b, OUTPUT);
   Serial.begin(115200); // Serial monitor for debugging
   //  initWiFi("SKYPNVF2", "FD3c4LEP3EAk");
-  initWiFi("Robotics Lab", "killallhumans");
+//  initWiFi("Robotics Lab", "killallhumans");
   //    initWiFi("Ben’s iPhone", "aaabbbccc1");
-  debugPrint("READY TO ROBOT");
-  delay(3000);
+//  debugPrint("READY TO ROBOT");
+//  delay(3000);
   //  debug = false;
 
 }
@@ -287,6 +308,7 @@ void setup() {
 int startTime = 0;
 int lastStartTime = 0;
 int x = 1;
+
 void loop() {
 
   //  sendit("AT+CIPSTATUS");
@@ -298,10 +320,19 @@ void loop() {
   //  startTime = millis();
   //  delay(5);
   //    Serial.println("loop");
-  String incommingData = getline();
-  bool x = processline(incommingData);
+  //  String incommingData = getline();
+  //  bool x = processline(incommingData);
   //  delay(1);
-
+  motorDemo(500,1);
+//  int batteryReading1 = analogRead(29);
+//  float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
+//  int batteryReading2 = analogRead(29);
+//  float batteryVoltage2 = 2.0*((3.3/1024.0)*batteryReading2);
+//  int batteryReading3 = analogRead(29);
+//  float batteryVoltage3 = 2.0*((3.3/1024.0)*batteryReading3);
+//  float ave = (batteryVoltage1 + batteryVoltage2 + batteryVoltage3)/3.0;
+//  Serial.println(ave);
+//  delay(500);
   //  sendit("AT+GMR");
   //  delay(1000);
 
