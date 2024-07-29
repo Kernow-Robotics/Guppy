@@ -2,19 +2,21 @@ int pinServo0 = 2;
 int pinServo1 = 3;
 int pinServo2 = 4;
 int pinServo3 = 5;
-int pinM0a = 9;
-int pinM0b = 8;
-int pinM1a = 10;
-int pinM1b = 11;
+int pinM0a = 10;
+int pinM0b = 11;
+int pinM1a = 9;
+int pinM1b = 8;
+int pinLED = 20;
+int pinVbatt = 29;
 
-#include <Servo.h>
 #include <Arduino.h>
+#include <Servo.h>
+#include <Guppy.h>
 
 Servo servo0;
 Servo servo1;
 Servo servo2;
 Servo servo3;
-
 bool debug = true;
 String recieved;
 String ipAddress;
@@ -286,6 +288,30 @@ void motorDemo(int waitTimeOn, int waitTimeOff){
   delay(waitTimeOff);
 }
 
+void heartbeat(){
+  digitalWrite(pinLED, HIGH);
+  delay(50);
+  digitalWrite(pinLED, LOW);
+  delay(50);
+  digitalWrite(pinLED, HIGH);
+  delay(50);
+  digitalWrite(pinLED, LOW);
+}
+
+void idle(){
+  int batteryReading1 = analogRead(pinVbatt);
+  float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
+  delay(1);
+  int batteryReading2 = analogRead(pinVbatt);
+  float batteryVoltage2 = 2.0*((3.3/1024.0)*batteryReading2);
+  delay(1);
+  int batteryReading3 = analogRead(pinVbatt);
+  float batteryVoltage3 = 2.0*((3.3/1024.0)*batteryReading3);
+  float ave = (batteryVoltage1 + batteryVoltage2 + batteryVoltage3)/3.0;
+  Serial.println(ave);
+  heartbeat();
+}
+
 void setup() {
   debug = true;
   servo0.attach(pinServo0);  // attaches the servo on pin 9 to the servo object
@@ -296,6 +322,8 @@ void setup() {
   pinMode(pinM0b, OUTPUT);
   pinMode(pinM1a, OUTPUT);
   pinMode(pinM1b, OUTPUT);
+  pinMode(pinLED, OUTPUT);
+  pinMode(pinVbatt, INPUT);
   Serial.begin(115200); // Serial monitor for debugging
   //  initWiFi("SKYPNVF2", "FD3c4LEP3EAk");
 //  initWiFi("Robotics Lab", "killallhumans");
@@ -306,9 +334,10 @@ void setup() {
 
 }
 
-int startTime = 0;
-int lastStartTime = 0;
-int x = 1;
+
+// int startTime = 0;
+// int lastStartTime = 0;
+// int x = 1;
 
 void loop() {
 
@@ -324,16 +353,17 @@ void loop() {
   //  String incommingData = getline();
   //  bool x = processline(incommingData);
   //  delay(1);
-  motorDemo(500,1);
-//  int batteryReading1 = analogRead(29);
-//  float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
-//  int batteryReading2 = analogRead(29);
-//  float batteryVoltage2 = 2.0*((3.3/1024.0)*batteryReading2);
-//  int batteryReading3 = analogRead(29);
-//  float batteryVoltage3 = 2.0*((3.3/1024.0)*batteryReading3);
-//  float ave = (batteryVoltage1 + batteryVoltage2 + batteryVoltage3)/3.0;
-//  Serial.println(ave);
-//  delay(500);
+//  motorDemo(500,1);
+  idle();
+  idle();
+  idle();
+  idle();
+  idle();
+  idle();
+  idle();
+  delay(500);
+  //  m0Power(50);
+  
   //  sendit("AT+GMR");
   //  delay(1000);
 
