@@ -11,7 +11,7 @@ int pinVbatt = 29;
 
 #include <Arduino.h>
 #include <Servo.h>
-#include <Arduino.h>
+#include <Guppy.h>
 
 Servo servo0;
 Servo servo1;
@@ -310,7 +310,6 @@ void idle(){
   float ave = (batteryVoltage1 + batteryVoltage2 + batteryVoltage3)/3.0;
   Serial.println(ave);
   heartbeat();
-  delay(500);
 }
 
 void setup() {
@@ -336,9 +335,9 @@ void setup() {
 }
 
 
-int startTime = 0;
-int lastStartTime = 0;
-int x = 1;
+// int startTime = 0;
+// int lastStartTime = 0;
+// int x = 1;
 
 void loop() {
 
@@ -356,6 +355,13 @@ void loop() {
   //  delay(1);
 //  motorDemo(500,1);
   idle();
+  idle();
+  idle();
+  idle();
+  idle();
+  idle();
+  idle();
+  delay(500);
   //  m0Power(50);
   
   //  sendit("AT+GMR");
