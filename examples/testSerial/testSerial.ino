@@ -1,4 +1,4 @@
-#include "Guppy.h"
+#include <Guppy.h>
 
 Guppy guppy;
 
@@ -7,9 +7,17 @@ void setup() {
 }
 
 void loop() {
-  guppy.heartbeat();
-  float vbatt = guppy.getVbatt();
-  Serial.print("Battery Voltage: ");
-  Serial.println(vbatt);
+  float vbatt = guppy.updateVbatt();
+
+  Serial.print("Minimum:");
+  Serial.print(3.0);
+  Serial.print(",");
+
+  Serial.print("Maximum:");
+  Serial.print(4.2);
+  Serial.print(",");
+
+  Serial.print("Current:");
+  Serial.println(vbatt, 3);
   delay(1000);
 }

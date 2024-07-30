@@ -17,6 +17,8 @@
 #define pinM1b 8
 #define pinLED 20
 #define pinVbatt 29
+#define pinSPI_CE 19
+#define pinSPI_CSN 1
 
 Guppy::Guppy()
 {
@@ -31,6 +33,7 @@ Guppy::Guppy()
   pinMode(pinLED, OUTPUT);
   pinMode(pinVbatt, INPUT);
   Serial.begin(115200);
+  _vbatt = 2.0*((3.3/1024.0)*analogRead(pinVbatt));
 }
 
 void Guppy::m0Power(int power = 0)
@@ -74,6 +77,7 @@ void Guppy::motorDrive(int power0 = 0, int power1 = 0)
   m0Power(power0);
   m1Power(power1);
 }
+
 void Guppy::heartbeat(){
   digitalWrite(pinLED, HIGH);
   delay(50);
@@ -84,15 +88,16 @@ void Guppy::heartbeat(){
   digitalWrite(pinLED, LOW);
 }
 
-float Guppy::getVbatt(){
-  int batteryReading1 = analogRead(pinVbatt);
-  float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
-  delay(1);
-  int batteryReading2 = analogRead(pinVbatt);
-  float batteryVoltage2 = 2.0*((3.3/1024.0)*batteryReading2);
-  delay(1);
-  int batteryReading3 = analogRead(pinVbatt);
-  float batteryVoltage3 = 2.0*((3.3/1024.0)*batteryReading3);
-  float ave = (batteryVoltage1 + batteryVoltage2 + batteryVoltage3)/3.0;
-  return ave;
+float Guppy::updateVbatt(){
+  float batteryReading = 2.0*((3.3/1024.0)*analogRead(pinVbatt));
+  _vbatt = (_vbatt*10 + batteryReading)/11;
+  // int batteryReading1 = analogRead(pinVbatt);
+  // float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
+  // int batteryReading2 = analogRead(pinVbatt);
+  // float batteryVoltage2 = 2.0*((3.3/1024.0)*batteryReading2);
+  // int batteryReading3 = analogRead(pinVbatt);
+  // float batteryVoltage3 = 2.0*((3.3/1024.0)*batteryReading3);
+  // float ave = (batteryVoltage1 + batteryVoltage2 + batteryVoltage3)/3.0;
+  // Serial.println(ave);
+  return _vbatt;
 }

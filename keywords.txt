@@ -1,0 +1,26 @@
+#######################################
+# Syntax Coloring Map For AutoPID Library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Guppy	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+m0Power	KEYWORD2
+m1Power	KEYWORD2
+motorDrive	KEYWORD2
+heartbeat	KEYWORD2
+updateVbatt	KEYWORD2
+setGains	KEYWORD2
+setGains	KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
