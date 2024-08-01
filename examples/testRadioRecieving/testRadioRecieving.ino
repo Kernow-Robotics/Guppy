@@ -10,10 +10,10 @@ RF24 radio(19, 1); // CE, CSN pins
 const byte address[6] = "00001";
 
 void setup() {
-  SPI.setRX(0);
+  SPI.setRX(0); // MISO
   SPI.setCS(1);
   SPI.setSCK(2);
-  SPI.setTX(3);
+  SPI.setTX(3); // MOSI
   Serial.begin(115200);
   radio.begin();
   radio.openReadingPipe(0, address);
