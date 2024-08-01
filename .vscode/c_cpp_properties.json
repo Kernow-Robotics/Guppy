@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "MacOS",
+            "includePath": [
+                "${env:HOME}/Library/Arduino15/packages/rp2040/**",
+                "${workspaceFolder}/**",
+                "${env:HOME}/Documents/Arduino/libraries/**"
+            ],
+            "defines": [],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14",
+            // "compilerPath": "${env:HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
+            "compilerPath": "${env:HOME}/Library/Arduino15/packages/rp2040/tools/pqt-gcc/2.2.0-d04e724/bin/arm-none-eabi-gcc",
+            "intelliSenseMode": "${default}"
+        }
+    ],
+    "version": 4
+}
