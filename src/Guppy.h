@@ -16,8 +16,8 @@ class Guppy
     void m1Power(int power);
     void motorDrive(int power0, int power1);
     void heartbeat();
-    float getVbatt();
+    float updateVbatt();
   private:
-    int _pin;
+    float _vbatt;
 };
 #endif
