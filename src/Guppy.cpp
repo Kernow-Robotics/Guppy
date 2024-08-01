@@ -4,7 +4,7 @@
   Released into the public domain.
 */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "Guppy.h"
 
 #define pinServo0 2
@@ -36,7 +36,7 @@ Guppy::Guppy()
   _vbatt = 2.0*((3.3/1024.0)*analogRead(pinVbatt));
 }
 
-void Guppy::m0Power(int power = 0)
+void Guppy::m0Power(int power)
 {
   Serial.print("m0 power =: ");
   Serial.println(power);
@@ -54,7 +54,7 @@ void Guppy::m0Power(int power = 0)
   }
 }
 
-void Guppy::m1Power(int power = 0)
+void Guppy::m1Power(int power)
 {
   Serial.print("m1 power =: ");
   Serial.println(power);
@@ -72,7 +72,7 @@ void Guppy::m1Power(int power = 0)
   }
 }
 
-void Guppy::motorDrive(int power0 = 0, int power1 = 0)
+void Guppy::motorDrive(int power0, int power1)
 {
   m0Power(power0);
   m1Power(power1);
