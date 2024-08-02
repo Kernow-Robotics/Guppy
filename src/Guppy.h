@@ -15,6 +15,8 @@ class Guppy
     void m0Power(int power);
     void m1Power(int power);
     void motorDrive(int power0, int power1);
+    void lightOn();
+    void lightOff();
     void heartbeat();
     float updateVbatt();
   private:

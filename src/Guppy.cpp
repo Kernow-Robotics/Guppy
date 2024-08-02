@@ -78,14 +78,24 @@ void Guppy::motorDrive(int power0 = 0, int power1 = 0)
   m1Power(power1);
 }
 
+void Guppy::lightOn()
+{
+  digitalWrite(pinLED, HIGH);
+}
+
+void Guppy::lightOff()
+{
+  digitalWrite(pinLED, LOW);
+}
+
 void Guppy::heartbeat(){
-  digitalWrite(pinLED, HIGH);
+  lightOn();
   delay(50);
-  digitalWrite(pinLED, LOW);
+  lightOff();
   delay(50);
-  digitalWrite(pinLED, HIGH);
+  lightOn();
   delay(50);
-  digitalWrite(pinLED, LOW);
+  lightOff();
 }
 
 float Guppy::updateVbatt(){
