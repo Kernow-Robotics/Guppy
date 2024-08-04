@@ -57,9 +57,9 @@ void Guppy::begin(){
     SPI.begin();
 
     Serial.begin(115200);
-    while (!Serial) {
-      // Wait for serial port to connect. Needed for native USB
-    }
+    // while (!Serial) {
+    //   // Wait for serial port to connect. Needed for native USB
+    // }
     Serial.println(F("Starting Guppy..."));
 
     heartbeat();
