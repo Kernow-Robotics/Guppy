@@ -19,15 +19,15 @@ public:
   float setpoint;
   Motor(int pinA, int pinB);
   void power(float power);
+  void _updatePower();
 
 private:
   int _pinA;
   int _pinB;
   float _currentPower;
   int _lastUpdateTime;
-  float _updateIncrement = 1.0; // (volts per second) rate at which a motor's power can change
+  float _updateIncrement = 100.0; // (volts per second) rate at which a motor's power can change
   void _rawPower(float power);
-  void _updatePower();
 };
 
 class Guppy

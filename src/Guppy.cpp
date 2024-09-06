@@ -37,6 +37,7 @@ Motor::Motor(int pinA, int pinB)
   _pinB = pinB;
   pinMode(_pinA, OUTPUT);
   pinMode(_pinB, OUTPUT);
+  _lastUpdateTime = millis();
 }
 
 void Motor::power(float power)
@@ -50,7 +51,6 @@ void Motor::power(float power)
     power = -5.0;
   }
   setpoint = power;
-  _rawPower(power);
 }
 
 void Motor::_rawPower(float power)
@@ -64,7 +64,8 @@ void Motor::_rawPower(float power)
     power = -5.0;
   }
 
-  int pwmPower = int(map(power, -5.0, 5.0, -255, 255));
+int pwmPower = power * (255/5.0);
+  // int pwmPower = int(map(power, -5.0, 5.0, -255, 255));
 
   if (pwmPower == 0)
   {
@@ -82,6 +83,41 @@ void Motor::_rawPower(float power)
     analogWrite(_pinB, abs(pwmPower));
   }
 }
+
+void Motor::_updatePower()
+{
+  float diff = (millis() - _lastUpdateTime) / 1000.0; // time since last update in seconds
+  if (_currentPower < setpoint)
+  {
+    _currentPower += _updateIncrement * diff;
+    if (_currentPower > setpoint)
+    {
+      _currentPower = setpoint;
+    }
+  }
+  else if (_currentPower > setpoint)
+  {
+    _currentPower -= _updateIncrement * diff;
+    if (_currentPower < setpoint)
+    {
+      _currentPower = setpoint;
+    }
+  }
+  _rawPower(_currentPower);
+  _lastUpdateTime = millis();
+
+
+
+
+  Serial.print("diff = ");
+  Serial.println(diff);
+  Serial.print("currentPower = ");
+  Serial.println(_currentPower);
+}
+
+
+
+
 
 // --------GUPPY CLASS--------
 Guppy *Guppy::instance = nullptr;
@@ -138,7 +174,7 @@ void Guppy::_beginCore1Wrapper()
 
 void Guppy::_beginCore1()
 {
-  _timer.attach(0.5, _updateWrapper);
+  _timer.attach(0.02, _updateWrapper);
   while (true)
   {
     // Core 1 stays busy here
@@ -154,7 +190,12 @@ void Guppy::_updateWrapper()
 void Guppy::_update()
 {
   Serial.print("updating...");
+  Serial.print("vbatt = ");
+  Serial.print(_vbatt);
+  Serial.print(" ");
   Serial.println(millis());
+  m0._updatePower();
+  m1._updatePower();
 }
 
 // --------Motor functions--------
