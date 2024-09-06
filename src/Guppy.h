@@ -10,17 +10,24 @@
 #include <RF24.h>
 #include <nRF24L01.h>
 #include <SPI.h>
+#include <pico/multicore.h>
+#include <Ticker.h>
 
 class Motor
 {
 public:
+  int setpoint;
   Motor(int pinA, int pinB);
   void power(int power);
 
 private:
   int _pinA;
   int _pinB;
-  void _power(int power);
+  float _currentPower;
+  int _lastUpdateTime;
+  float _updateIncrement = 1.0; // (volts per second) rate at which a motor's power can change
+  void _rawPower(int power);
+  void _updatePower();
 };
 
 class Guppy
@@ -30,16 +37,16 @@ public:
   Motor m0;
   Motor m1;
   void begin();
+  // --------Background services--------
+  void startBackgroundServices();
   // --------Motor functions--------
-  void m0Power(int power);
-  void m1Power(int power);
   void motorDrive(int power0, int power1);
   // --------Radio functions--------
-  RF24 radio;
   void initRadio();
   void startListening(uint8_t address[6]);
   void stopListening();
   void send(String message, uint8_t address[6]);
+  String receive();
   // --------LED functions--------
   void lightOn();
   void lightOff();
@@ -48,8 +55,16 @@ public:
   // --------Battery functions--------
   float updateVbatt();
 
+  static Guppy *instance;
+
 private:
   float _vbatt;
+  RF24 _radio;
+  Ticker _timer;
+  static void _beginCore1Wrapper();
+  void _beginCore1();
+  static void _updateWrapper();
+  void _update();
 };
 
 #endif

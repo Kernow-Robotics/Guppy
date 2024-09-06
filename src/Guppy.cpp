@@ -10,6 +10,7 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <pico/multicore.h>
 
 #define pinServo0 2
 #define pinServo1 3
@@ -27,9 +28,9 @@
 #define pinSPI_SCK 2
 #define pinSPI_MOSI 3
 
-RF24 radio(pinSPI_CE, pinSPI_CS);
+// RF24 radio(pinSPI_CE, pinSPI_CS);
 
-// --------Motor class--------
+// --------MOTOR CLASS--------
 Motor::Motor(int pinA, int pinB)
 {
   _pinA = pinA;
@@ -38,8 +39,29 @@ Motor::Motor(int pinA, int pinB)
   pinMode(_pinB, OUTPUT);
 }
 
-void Motor::_power(int power)
+void Motor::power(int power)
 {
+  if (power > 255)
+  {
+    power = 255;
+  }
+  else if (power < -255)
+  {
+    power = -255;
+  }
+  setpoint = power;
+}
+
+void Motor::_rawPower(int power)
+{
+  if (power > 255)
+  {
+    power = 255;
+  }
+  else if (power < -255)
+  {
+    power = -255;
+  }
   if (power == 0)
   {
     digitalWrite(_pinA, LOW);
@@ -57,10 +79,14 @@ void Motor::_power(int power)
   }
 }
 
-Guppy::Guppy()
+// --------GUPPY CLASS--------
+Guppy *Guppy::instance = nullptr;
+
+Guppy::Guppy() : m0(pinM0a, pinM0b),
+                 m1(pinM1a, pinM1b),
+                 _radio(pinSPI_CE, pinSPI_CS),
+                 _timer()
 {
-  Motor m0(pinM0a, pinM0b);
-  Motor m1(pinM1a, pinM1b);
   pinMode(pinServo0, OUTPUT);
   pinMode(pinServo1, OUTPUT);
   pinMode(pinServo2, OUTPUT);
@@ -75,21 +101,56 @@ Guppy::Guppy()
 void Guppy::begin()
 {
 
-  SPI.setRX(0); // MISO
-  SPI.setCS(1);
-  SPI.setSCK(2);
-  SPI.setTX(3); // MOSI
+  SPI.setRX(pinSPI_MISO); // MISO
+  SPI.setCS(pinSPI_CS);
+  SPI.setSCK(pinSPI_SCK);
+  SPI.setTX(pinSPI_MOSI); // MOSI
   SPI.begin();
 
   Serial.begin(115200);
   // while (!Serial) {
   //   // Wait for serial port to connect. Needed for native USB
   // }
+
+  
+
   Serial.println(F("Starting Guppy..."));
 
   heartbeat();
 
   _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
+}
+// --------Background services--------
+void Guppy::startBackgroundServices()
+{
+  instance = this;
+  multicore_launch_core1(_beginCore1Wrapper);
+}
+
+void Guppy::_beginCore1Wrapper()
+{
+  instance->_beginCore1();
+}
+
+void Guppy::_beginCore1()
+{
+  _timer.attach(0.5, _updateWrapper);
+  while (true)
+  {
+    // Core 1 stays busy here
+    tight_loop_contents(); // Keeps Core 1 running without blocking
+  }
+}
+
+void Guppy::_updateWrapper()
+{
+  instance->_update();
+}
+
+void Guppy::_update()
+{
+  Serial.print("updating...");
+  Serial.println(millis());
 }
 
 // --------Motor functions--------
@@ -104,7 +165,7 @@ void Guppy::initRadio()
 {
   // Initialize the radio
   Serial.println(F("Initializing radio..."));
-  if (!radio.begin(19, 1))
+  if (!_radio.begin(19, 1))
   {
     Serial.println(F("radio hardware is not responding!!"));
     while (1)
@@ -116,36 +177,49 @@ void Guppy::initRadio()
   {
     Serial.println(F("radio initialized successfully"));
   }
-  radio.setPALevel(RF24_PA_MAX);
-  radio.setDataRate(RF24_250KBPS);
-  radio.stopListening();
+  _radio.setPALevel(RF24_PA_MAX);
+  _radio.setDataRate(RF24_250KBPS);
+  _radio.stopListening();
 }
 
 void Guppy::startListening(uint8_t address[6])
 {
-  radio.openReadingPipe(0, address);
-  radio.startListening();
+  _radio.openReadingPipe(0, address);
+  _radio.startListening();
 }
 
 void Guppy::stopListening()
 {
-  radio.stopListening();
+  _radio.stopListening();
 }
 
 void Guppy::send(String message, uint8_t address[6])
 {
-  // const byte demoaddresses[6] = "N3";
-  // radio.openWritingPipe(demoaddresses);
-  radio.openWritingPipe(address);
-  // Serial.print("openning writing pipe");
-  // Serial.println(address);
+  _radio.openWritingPipe(address);
   char text[32];
   message.toCharArray(text, sizeof(text));
-  radio.write(&text, sizeof(text));
-  Serial.print("Sent: ");
-  Serial.print(text);
-  Serial.print(" to radio address: ");
-  Serial.println((char *)address);
+  _radio.write(&text, sizeof(text));
+  // Serial.print("Sent: ");
+  // Serial.print(text);
+  // Serial.print(" to radio address: ");
+  // Serial.println((char *)address);
+}
+
+String Guppy::receive()
+{
+  if (_radio.available())
+  {
+    char text[32] = {0};
+    _radio.read(&text, sizeof(text));
+    Serial.print("Received: ");
+    Serial.println(text);
+    String message = String(text);
+    return message;
+  }
+  else
+  {
+    return "";
+  }
 }
 
 // --------LED functions--------

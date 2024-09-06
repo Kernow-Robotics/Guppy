@@ -11,17 +11,14 @@ void setup() {
 }
 
 void loop() {
-  if (guppy.radio.available()) {
-    char text[32] = { 0 };
-    guppy.radio.read(&text, sizeof(text));
-    Serial.print("Received: ");
-    Serial.println(text);
-    String message = String(text);
-    if (message == "light_on") {
-      guppy.lightOn();
-    }
-    if (message == "light_off") {
-      guppy.lightOff();
-    }
+  String message = "";
+  message = guppy.receive();
+  if (message == "light_on")
+  {
+    guppy.lightOn();
+  }
+  else if (message == "light_off")
+  {
+    guppy.lightOff();
   }
 }
