@@ -39,43 +39,47 @@ Motor::Motor(int pinA, int pinB)
   pinMode(_pinB, OUTPUT);
 }
 
-void Motor::power(int power)
+void Motor::power(float power)
 {
-  if (power > 255)
+  if (power > 5.0)
   {
-    power = 255;
+    power = 5.0;
   }
-  else if (power < -255)
+  else if (power < -5.0)
   {
-    power = -255;
+    power = -5.0;
   }
   setpoint = power;
+  _rawPower(power);
 }
 
-void Motor::_rawPower(int power)
+void Motor::_rawPower(float power)
 {
-  if (power > 255)
+  if (power > 5.0)
   {
-    power = 255;
+    power = 5.0;
   }
-  else if (power < -255)
+  else if (power < -5.0)
   {
-    power = -255;
+    power = -5.0;
   }
-  if (power == 0)
+
+  int pwmPower = int(map(power, -5.0, 5.0, -255, 255));
+
+  if (pwmPower == 0)
   {
     digitalWrite(_pinA, LOW);
     digitalWrite(_pinB, LOW);
   }
-  else if (power > 0)
+  else if (pwmPower > 0)
   {
     digitalWrite(_pinB, LOW);
-    analogWrite(_pinA, power);
+    analogWrite(_pinA, pwmPower);
   }
-  else if (power < 0)
+  else if (pwmPower < 0)
   {
     digitalWrite(_pinA, LOW);
-    analogWrite(_pinB, abs(power));
+    analogWrite(_pinB, abs(pwmPower));
   }
 }
 
@@ -154,7 +158,7 @@ void Guppy::_update()
 }
 
 // --------Motor functions--------
-void Guppy::motorDrive(int power0 = 0, int power1 = 0)
+void Guppy::motorDrive(float power0, float power1)
 {
   m0.power(power0);
   m1.power(power1);

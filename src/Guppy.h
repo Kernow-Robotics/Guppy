@@ -16,9 +16,9 @@
 class Motor
 {
 public:
-  int setpoint;
+  float setpoint;
   Motor(int pinA, int pinB);
-  void power(int power);
+  void power(float power);
 
 private:
   int _pinA;
@@ -26,7 +26,7 @@ private:
   float _currentPower;
   int _lastUpdateTime;
   float _updateIncrement = 1.0; // (volts per second) rate at which a motor's power can change
-  void _rawPower(int power);
+  void _rawPower(float power);
   void _updatePower();
 };
 
@@ -40,7 +40,7 @@ public:
   // --------Background services--------
   void startBackgroundServices();
   // --------Motor functions--------
-  void motorDrive(int power0, int power1);
+  void motorDrive(float power0, float power1);
   // --------Radio functions--------
   void initRadio();
   void startListening(uint8_t address[6]);
