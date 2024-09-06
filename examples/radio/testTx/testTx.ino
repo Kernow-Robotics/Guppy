@@ -7,6 +7,7 @@ uint8_t addresses[][6] = { "00001", "00002", "00003" };
 void setup() {
   guppy.begin();
   guppy.initRadio();
+  guppy.startBackgroundServices();
 }
 
 void loop() {
