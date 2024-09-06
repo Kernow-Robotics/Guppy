@@ -15,8 +15,8 @@
 #define pinServo1 3
 #define pinServo2 4
 #define pinServo3 5
-#define pinM0a 10
-#define pinM0b 11
+#define pinM0a 11
+#define pinM0b 10
 #define pinM1a 9
 #define pinM1b 8
 #define pinLED 20
@@ -27,97 +27,93 @@
 #define pinSPI_SCK 2
 #define pinSPI_MOSI 3
 
-RF24 radio(19, 1);
+RF24 radio(pinSPI_CE, pinSPI_CS);
 
-Guppy::Guppy() {
+// --------Motor class--------
+Motor::Motor(int pinA, int pinB)
+{
+  _pinA = pinA;
+  _pinB = pinB;
+  pinMode(_pinA, OUTPUT);
+  pinMode(_pinB, OUTPUT);
+}
 
+void Motor::_power(int power)
+{
+  if (power == 0)
+  {
+    digitalWrite(_pinA, LOW);
+    digitalWrite(_pinB, LOW);
+  }
+  else if (power > 0)
+  {
+    digitalWrite(_pinB, LOW);
+    analogWrite(_pinA, power);
+  }
+  else if (power < 0)
+  {
+    digitalWrite(_pinA, LOW);
+    analogWrite(_pinB, abs(power));
+  }
+}
 
-
+Guppy::Guppy()
+{
+  Motor m0(pinM0a, pinM0b);
+  Motor m1(pinM1a, pinM1b);
+  pinMode(pinServo0, OUTPUT);
+  pinMode(pinServo1, OUTPUT);
+  pinMode(pinServo2, OUTPUT);
+  pinMode(pinServo3, OUTPUT);
+  pinMode(pinLED, OUTPUT);
+  pinMode(pinVbatt, INPUT);
 
   // Serial.begin(115200);
   // _vbatt = 2.0*((3.3/1024.0)*analogRead(pinVbatt));
 }
 
-void Guppy::begin(){
-    pinMode(pinServo0, OUTPUT);
-    pinMode(pinServo1, OUTPUT);
-    pinMode(pinServo2, OUTPUT);
-    pinMode(pinServo3, OUTPUT);
-    pinMode(pinM0a, OUTPUT);
-    pinMode(pinM0b, OUTPUT);
-    pinMode(pinM1a, OUTPUT);
-    pinMode(pinM1b, OUTPUT);
-    pinMode(pinLED, OUTPUT);
-    pinMode(pinVbatt, INPUT);
+void Guppy::begin()
+{
 
-    SPI.setRX(0);  // MISO
-    SPI.setCS(1);
-    SPI.setSCK(2);
-    SPI.setTX(3);  // MOSI
-    SPI.begin();
+  SPI.setRX(0); // MISO
+  SPI.setCS(1);
+  SPI.setSCK(2);
+  SPI.setTX(3); // MOSI
+  SPI.begin();
 
-    Serial.begin(115200);
-    // while (!Serial) {
-    //   // Wait for serial port to connect. Needed for native USB
-    // }
-    Serial.println(F("Starting Guppy..."));
+  Serial.begin(115200);
+  // while (!Serial) {
+  //   // Wait for serial port to connect. Needed for native USB
+  // }
+  Serial.println(F("Starting Guppy..."));
 
-    heartbeat();
-  
+  heartbeat();
 
-    _vbatt = 2.0*((3.3/1024.0)*analogRead(pinVbatt));
+  _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
 }
 
 // --------Motor functions--------
-void Guppy::m0Power(int power = 0){
-  Serial.print("m0 power =: ");
-  Serial.println(power);
-  if (power == 0) {
-    digitalWrite(pinM0a, LOW);
-    digitalWrite(pinM0b, LOW);
-  }
-  else if (power > 0) {
-    digitalWrite(pinM0b, LOW);
-    analogWrite(pinM0a, power);
-  }
-  else if (power < 0) {
-    digitalWrite(pinM0a, LOW);
-    analogWrite(pinM0b, abs(power));
-  }
-}
-
-void Guppy::m1Power(int power = 0){
-  Serial.print("m1 power =: ");
-  Serial.println(power);
-  if (power == 0) {
-    digitalWrite(pinM1a, LOW);
-    digitalWrite(pinM1b, LOW);
-  }
-  else if (power > 0) {
-    digitalWrite(pinM1b, LOW);
-    analogWrite(pinM1a, power);
-  }
-  else if (power < 0) {
-    digitalWrite(pinM1a, LOW);
-    analogWrite(pinM1b, abs(power));
-  }
-}
-
-void Guppy::motorDrive(int power0 = 0, int power1 = 0){
-  m0Power(power0);
-  m1Power(power1);
+void Guppy::motorDrive(int power0 = 0, int power1 = 0)
+{
+  m0.power(power0);
+  m1.power(power1);
 }
 
 // --------Radio functions--------
-void Guppy::initRadio(){
+void Guppy::initRadio()
+{
   // Initialize the radio
   Serial.println(F("Initializing radio..."));
-  if (!radio.begin(19,1)) {
+  if (!radio.begin(19, 1))
+  {
     Serial.println(F("radio hardware is not responding!!"));
-    while (1) {
+    while (1)
+    {
       errorState();
-    }  // hold in infinite loop
-  } else {
+    } // hold in infinite loop
+  }
+  else
+  {
     Serial.println(F("radio initialized successfully"));
   }
   radio.setPALevel(RF24_PA_MAX);
@@ -125,16 +121,19 @@ void Guppy::initRadio(){
   radio.stopListening();
 }
 
-void Guppy::startListening(uint8_t address[6]){
+void Guppy::startListening(uint8_t address[6])
+{
   radio.openReadingPipe(0, address);
   radio.startListening();
 }
 
-void Guppy::stopListening(){
+void Guppy::stopListening()
+{
   radio.stopListening();
 }
 
-void Guppy::send(String message, uint8_t address[6]){
+void Guppy::send(String message, uint8_t address[6])
+{
   // const byte demoaddresses[6] = "N3";
   // radio.openWritingPipe(demoaddresses);
   radio.openWritingPipe(address);
@@ -146,18 +145,22 @@ void Guppy::send(String message, uint8_t address[6]){
   Serial.print("Sent: ");
   Serial.print(text);
   Serial.print(" to radio address: ");
-  Serial.println((char*)address);
+  Serial.println((char *)address);
 }
+
 // --------LED functions--------
-void Guppy::lightOn(){
+void Guppy::lightOn()
+{
   digitalWrite(pinLED, HIGH);
 }
 
-void Guppy::lightOff(){
+void Guppy::lightOff()
+{
   digitalWrite(pinLED, LOW);
 }
 
-void Guppy::heartbeat(){
+void Guppy::heartbeat()
+{
   lightOn();
   delay(50);
   lightOff();
@@ -167,7 +170,8 @@ void Guppy::heartbeat(){
   lightOff();
 }
 
-void Guppy::errorState(){
+void Guppy::errorState()
+{
   lightOn();
   delay(100);
   lightOff();
@@ -175,9 +179,10 @@ void Guppy::errorState(){
 }
 
 // --------Battery functions--------
-float Guppy::updateVbatt(){
-  float batteryReading = 2.0*((3.3/1024.0)*analogRead(pinVbatt));
-  _vbatt = (_vbatt*10 + batteryReading)/11;
+float Guppy::updateVbatt()
+{
+  float batteryReading = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
+  _vbatt = (_vbatt * 10 + batteryReading) / 11;
   // int batteryReading1 = analogRead(pinVbatt);
   // float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
   // int batteryReading2 = analogRead(pinVbatt);
