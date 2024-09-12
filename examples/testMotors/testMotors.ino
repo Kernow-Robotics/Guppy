@@ -8,12 +8,9 @@ void setup() {
 }
 
 void loop() {
-  guppy.motorDrive(5.0, 5.0);
-  delay(5000);
-  guppy.motorDrive(0, 0);
-  delay(5000);
-  guppy.motorDrive(-5.0, -5.0);
-  delay(5000);
-  guppy.motorDrive(0, 0);
-  delay(5000);
+  float power = 5.0;
+  guppy.motorDrive(power, power);
+  delay(1000);
+  guppy.motorDrive(-power, -power);
+  delay(1000);
 }
