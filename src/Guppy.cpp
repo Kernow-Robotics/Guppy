@@ -1,5 +1,5 @@
 /*
-  Guppy.h - Library for ineracting with a Guppy robot.
+  Guppy.cpp - Library for ineracting with a Guppy robot.
   Created by Ben Green, July 29, 2024.
   Released into the public domain.
 */

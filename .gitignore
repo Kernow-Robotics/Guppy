@@ -152,3 +152,5 @@ cython_debug/
 #.idea/
 .picowgo
 .micropico
+
+.vscode/tasks.json
