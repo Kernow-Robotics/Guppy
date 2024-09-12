@@ -7,6 +7,7 @@
 #define Guppy_h
 
 #include "Arduino.h"
+
 #include <RF24.h>
 #include <nRF24L01.h>
 #include <SPI.h>
@@ -26,7 +27,7 @@ private:
   int _pinB;
   float _currentPower;
   int _lastUpdateTime;
-  float _updateIncrement = 100.0; // (volts per second) rate at which a motor's power can change
+  float _updateIncrement = 20.0; // (volts per second) rate at which a motor's power can change
   void _rawPower(float power);
 };
 
