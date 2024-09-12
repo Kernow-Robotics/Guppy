@@ -12,6 +12,7 @@
 #include <RF24.h>
 #include <pico/multicore.h>
 
+// --------PIN DECLARATIONS--------
 #define pinServo0 2
 #define pinServo1 3
 #define pinServo2 4
