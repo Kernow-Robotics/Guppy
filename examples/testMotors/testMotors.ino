@@ -3,16 +3,14 @@
 Guppy guppy;
 
 void setup() {
-
+  guppy.begin();
+  guppy.startBackgroundServices();
 }
 
 void loop() {
-  guppy.motorDrive(255, 255);
+  float power = 5.0;
+  guppy.motorDrive(power, power);
   delay(1000);
-  guppy.motorDrive(0, 0);
-  delay(1000);
-  guppy.motorDrive(-255, -255);
-  delay(1000);
-  guppy.motorDrive(0, 0);
+  guppy.motorDrive(-power, -power);
   delay(1000);
 }
