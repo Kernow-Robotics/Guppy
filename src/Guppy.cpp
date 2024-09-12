@@ -28,8 +28,6 @@
 #define pinSPI_SCK 2
 #define pinSPI_MOSI 3
 
-// RF24 radio(pinSPI_CE, pinSPI_CS);
-
 // --------MOTOR CLASS--------
 Motor::Motor(int pinA, int pinB)
 {

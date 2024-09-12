@@ -38,22 +38,17 @@ public:
   Motor m0;
   Motor m1;
   void begin();
-  // --------Background services--------
   void startBackgroundServices();
-  // --------Motor functions--------
   void motorDrive(float power0, float power1);
-  // --------Radio functions--------
   void initRadio();
   void startListening(uint8_t address[6]);
   void stopListening();
   void send(String message, uint8_t address[6]);
   String receive();
-  // --------LED functions--------
   void lightOn();
   void lightOff();
   void heartbeat();
   void errorState();
-  // --------Battery functions--------
   float updateVbatt();
 
   static Guppy *instance;
