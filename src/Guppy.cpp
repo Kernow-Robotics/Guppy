@@ -17,10 +17,10 @@
 #define pinServo1 3
 #define pinServo2 4
 #define pinServo3 5
-#define pinM0a 11
-#define pinM0b 10
-#define pinM1a 9
-#define pinM1b 8
+#define pinM0a 10
+#define pinM0b 11
+#define pinM1a 8
+#define pinM1b 9
 #define pinLED 20
 #define pinVbatt 29
 #define pinSPI_CE 19

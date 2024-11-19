@@ -2,12 +2,13 @@
 
 Guppy guppy;
 
-uint8_t address[6] = "00001";
+uint8_t myAddress[6] = "00002";
 
 void setup() {
   guppy.begin();
+  guppy.startBackgroundServices();
   guppy.initRadio();
-  guppy.startListening(address);
+  guppy.startListening(myAddress);
 }
 
 void loop() {
