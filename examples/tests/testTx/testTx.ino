@@ -2,7 +2,9 @@
 
 Guppy guppy;
 
-uint8_t addresses[][6] = { "00001", "00002", "00003" };
+uint8_t myAddress[6] = "00001";
+
+uint8_t addresses[][6] = { "00002", "00003", "00004" };
 
 void setup() {
   guppy.begin();
@@ -15,7 +17,7 @@ void loop() {
   for (int i = 0; i < 3; i++) {
     guppy.send("light_on", addresses[i]);
   }
-  delay(200);
+  delay(1000);
 
   guppy.lightOff();
   for (int i = 0; i < 3; i++) {

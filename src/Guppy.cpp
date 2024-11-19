@@ -302,3 +302,57 @@ float Guppy::updateVbatt()
   // Serial.println(ave);
   return _vbatt;
 }
+
+// Function to convert voltage to SOC
+float Guppy::voltage_to_soc(float voltage)
+{
+  // Check for values outside the table range
+  float voltage_soc_table[][2] = {
+      {4.20, 100},
+      {4.15, 95},
+      {4.10, 90},
+      {4.05, 85},
+      {4.00, 80},
+      {3.95, 75},
+      {3.90, 70},
+      {3.85, 65},
+      {3.80, 60},
+      {3.75, 55},
+      {3.70, 50},
+      {3.65, 45},
+      {3.60, 40},
+      {3.55, 35},
+      {3.50, 30},
+      {3.45, 25},
+      {3.40, 20},
+      {3.35, 15},
+      {3.30, 10},
+      {3.25, 5},
+      {3.20, 0}};
+  if (voltage >= 4.2)
+  {
+    return 100.0;
+  }
+  else if (voltage <= 3.2)
+  {
+    return 0.0;
+  }
+
+  // Loop through the voltage-SOC table and interpolate between values
+  for (int i = 0; i < (sizeof(voltage_soc_table) / sizeof(voltage_soc_table[0])) - 1; i++)
+  {
+    float v_high = voltage_soc_table[i][0];
+    float soc_high = voltage_soc_table[i][1];
+    float v_low = voltage_soc_table[i + 1][0];
+    float soc_low = voltage_soc_table[i + 1][1];
+
+    if (voltage <= v_high && voltage >= v_low)
+    {
+      // Linear interpolation between the two points
+      return soc_low + (soc_high - soc_low) * (voltage - v_low) / (v_high - v_low);
+    }
+  }
+
+  // If voltage is out of range, return -1 (should never happen due to prior checks)
+  return -1.0;
+}

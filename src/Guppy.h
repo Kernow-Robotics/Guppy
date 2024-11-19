@@ -50,6 +50,7 @@ public:
   void heartbeat();
   void errorState();
   float updateVbatt();
+  float voltage_to_soc(float voltage);
 
   static Guppy *instance;
 
