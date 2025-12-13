@@ -27,7 +27,7 @@ private:
   int _pinB;
   float _currentPower;
   int _lastUpdateTime;
-  float _updateIncrement = 20.0; // (volts per second) rate at which a motor's power can change
+  float _updateIncrement = 200.0; // (volts per second) rate at which a motor's power can change
   void _rawPower(float power);
 };
 
@@ -50,7 +50,7 @@ public:
   void heartbeat();
   void errorState();
   float updateVbatt();
-  float voltage_to_soc(float voltage);
+  int voltageToSOC(float voltage);
 
   static Guppy *instance;
 
