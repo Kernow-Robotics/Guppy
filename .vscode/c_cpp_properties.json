@@ -3,15 +3,35 @@
         {
             "name": "MacOS",
             "includePath": [
+                // Prefer RP2040 core SPI over third-party libraries
+                "${env:HOME}/Library/Arduino15/packages/rp2040/hardware/rp2040/**/libraries/SPI/src",
+                "${env:HOME}/Library/Arduino15/packages/rp2040/hardware/rp2040/**/cores/rp2040",
+                "${env:HOME}/Library/Arduino15/packages/rp2040/hardware/rp2040/**/variants/**",
                 "${env:HOME}/Library/Arduino15/packages/rp2040/**",
-                "${workspaceFolder}/**",
-                "${env:HOME}/Documents/Arduino/libraries/**"
+                "${env:HOME}/Documents/Arduino/libraries/**",
+                "${workspaceFolder}/**"
             ],
-            "defines": [],
+            "browse": {
+                "path": [
+                    "${env:HOME}/Library/Arduino15/packages/rp2040/hardware/rp2040/**/libraries/SPI/src",
+                    "${env:HOME}/Library/Arduino15/packages/rp2040/hardware/rp2040/**/cores/rp2040",
+                    "${env:HOME}/Library/Arduino15/packages/rp2040/hardware/rp2040/**/variants/**",
+                    "${env:HOME}/Library/Arduino15/packages/rp2040/**",
+                    "${env:HOME}/Documents/Arduino/libraries/**",
+                    "${workspaceFolder}/**"
+                ]
+            },
+            "defines": [
+                "ARDUINO=10819",
+                "ARDUINO_ARCH_RP2040",
+                "ARDUINO_RASPBERRY_PI_PICO",
+                "PICO_RP2040",
+                "F_CPU=133000000",
+                "PICO_DEFAULT_SPI_INSTANCE=0"
+            ],
             "cStandard": "gnu11",
             "cppStandard": "gnu++14",
-            // "compilerPath": "${env:HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
-            "compilerPath": "${env:HOME}/Library/Arduino15/packages/rp2040/tools/pqt-gcc/4.0.1-8ec9d6f/bin/arm-none-eabi-gcc",
+            "compilerPath": "${env:HOME}/Library/Arduino15/packages/rp2040/tools/pqt-gcc/4.1.0-1aec55e/bin/arm-none-eabi-g++",
             "intelliSenseMode": "${default}"
         }
     ],

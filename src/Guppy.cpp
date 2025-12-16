@@ -4,12 +4,13 @@
   Released into the public domain.
 */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "Guppy.h"
 
 #include <SPI.h>
-#include <nRF24L01.h>
 #include <RF24.h>
+#include <nRF24L01.h>
+
 #include <pico/multicore.h>
 
 // --------PIN DECLARATIONS--------
@@ -132,7 +133,6 @@ Guppy::Guppy() : m0(pinM0a, pinM0b),
 
 void Guppy::begin()
 {
-
   SPI.setRX(pinSPI_MISO); // MISO
   SPI.setCS(pinSPI_CS);
   SPI.setSCK(pinSPI_SCK);

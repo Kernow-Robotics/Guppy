@@ -8,9 +8,9 @@
 
 #include "Arduino.h"
 
+#include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
-#include <SPI.h>
 #include <pico/multicore.h>
 #include <Ticker.h>
 
