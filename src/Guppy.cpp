@@ -4,12 +4,13 @@
   Released into the public domain.
 */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "Guppy.h"
 
 #include <SPI.h>
-#include <nRF24L01.h>
 #include <RF24.h>
+#include <nRF24L01.h>
+
 #include <pico/multicore.h>
 
 // --------PIN DECLARATIONS--------
@@ -17,10 +18,10 @@
 #define pinServo1 3
 #define pinServo2 4
 #define pinServo3 5
-#define pinM0a 10
-#define pinM0b 11
-#define pinM1a 8
-#define pinM1b 9
+#define pinM0a 8
+#define pinM0b 9
+#define pinM1a 10
+#define pinM1b 11
 #define pinLED 20
 #define pinVbatt 29
 #define pinSPI_CE 19
@@ -68,18 +69,18 @@ void Motor::_rawPower(float power)
 
   if (pwmPower == 0)
   {
-    digitalWrite(_pinA, LOW);
-    digitalWrite(_pinB, LOW);
+    digitalWrite(_pinA, HIGH);
+    digitalWrite(_pinB, HIGH);
   }
   else if (pwmPower > 0)
   {
-    digitalWrite(_pinB, LOW);
-    analogWrite(_pinA, pwmPower);
+    analogWrite(_pinB, (255-pwmPower));
+    digitalWrite(_pinA, HIGH);
   }
   else if (pwmPower < 0)
   {
-    digitalWrite(_pinA, LOW);
-    analogWrite(_pinB, abs(pwmPower));
+    analogWrite(_pinA, (255-abs(pwmPower)));
+    digitalWrite(_pinB, HIGH);
   }
 }
 
@@ -105,10 +106,10 @@ void Motor::_updatePower()
   _rawPower(_currentPower);
   _lastUpdateTime = millis();
 
-  Serial.print("diff = ");
-  Serial.println(diff);
-  Serial.print("currentPower = ");
-  Serial.println(_currentPower);
+  // Serial.print("diff = ");
+  // Serial.println(diff);
+  // Serial.print("currentPower = ");
+  // Serial.println(_currentPower);
 }
 
 // --------GUPPY CLASS--------
@@ -132,7 +133,6 @@ Guppy::Guppy() : m0(pinM0a, pinM0b),
 
 void Guppy::begin()
 {
-
   SPI.setRX(pinSPI_MISO); // MISO
   SPI.setCS(pinSPI_CS);
   SPI.setSCK(pinSPI_SCK);
@@ -148,6 +148,8 @@ void Guppy::begin()
 
   heartbeat();
 
+  _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
+  _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
   _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
 }
 // --------Background services--------
@@ -179,11 +181,11 @@ void Guppy::_updateWrapper()
 
 void Guppy::_update()
 {
-  Serial.print("updating...");
-  Serial.print("vbatt = ");
-  Serial.print(_vbatt);
-  Serial.print(" ");
-  Serial.println(millis());
+  // Serial.print("updating...");
+  // Serial.print("vbatt = ");
+  // Serial.print(_vbatt);
+  // Serial.print(" ");
+  // Serial.println(millis());
   m0._updatePower();
   m1._updatePower();
 }
@@ -291,7 +293,7 @@ void Guppy::errorState()
 float Guppy::updateVbatt()
 {
   float batteryReading = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
-  _vbatt = (_vbatt * 10 + batteryReading) / 11;
+  _vbatt = (_vbatt * 9 + batteryReading) / 10;
   // int batteryReading1 = analogRead(pinVbatt);
   // float batteryVoltage1 = 2.0*((3.3/1024.0)*batteryReading1);
   // int batteryReading2 = analogRead(pinVbatt);
@@ -304,38 +306,38 @@ float Guppy::updateVbatt()
 }
 
 // Function to convert voltage to SOC
-float Guppy::voltage_to_soc(float voltage)
+int Guppy::voltageToSOC(float voltage)
 {
   // Check for values outside the table range
   float voltage_soc_table[][2] = {
       {4.20, 100},
       {4.15, 95},
-      {4.10, 90},
-      {4.05, 85},
-      {4.00, 80},
-      {3.95, 75},
-      {3.90, 70},
-      {3.85, 65},
-      {3.80, 60},
-      {3.75, 55},
-      {3.70, 50},
-      {3.65, 45},
-      {3.60, 40},
-      {3.55, 35},
-      {3.50, 30},
-      {3.45, 25},
-      {3.40, 20},
-      {3.35, 15},
-      {3.30, 10},
-      {3.25, 5},
-      {3.20, 0}};
+      {4.11, 90},
+      {4.08, 85},
+      {4.02, 80},
+      {3.98, 75},
+      {3.95, 70},
+      {3.91, 65},
+      {3.87, 60},
+      {3.85, 55},
+      {3.84, 50},
+      {3.82, 45},
+      {3.80, 40},
+      {3.79, 35},
+      {3.77, 30},
+      {3.75, 25},
+      {3.73, 20},
+      {3.71, 15},
+      {3.69, 10},
+      {3.61, 5},
+      {3.27, 0}};
   if (voltage >= 4.2)
   {
-    return 100.0;
+    return 100;
   }
   else if (voltage <= 3.2)
   {
-    return 0.0;
+    return 0;
   }
 
   // Loop through the voltage-SOC table and interpolate between values
@@ -349,10 +351,10 @@ float Guppy::voltage_to_soc(float voltage)
     if (voltage <= v_high && voltage >= v_low)
     {
       // Linear interpolation between the two points
-      return soc_low + (soc_high - soc_low) * (voltage - v_low) / (v_high - v_low);
+      return int(round(soc_low + (soc_high - soc_low) * (voltage - v_low) / (v_high - v_low)));
     }
   }
 
   // If voltage is out of range, return -1 (should never happen due to prior checks)
-  return -1.0;
+  return -1;
 }

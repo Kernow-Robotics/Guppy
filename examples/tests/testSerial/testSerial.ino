@@ -3,21 +3,23 @@
 Guppy guppy;
 
 void setup() {
-  Serial.begin(115200);
+  guppy.begin();
+  guppy.startBackgroundServices();
 }
 
 void loop() {
+  // Get the voltage of the battery
   float vbatt = guppy.updateVbatt();
 
-  Serial.print("Minimum:");
-  Serial.print(3.0);
-  Serial.print(",");
+  // Convert the voltage into the state of charge (SOC) measured in percentage
+  int stateOfCharge = guppy.voltageToSOC(vbatt);
 
-  Serial.print("Maximum:");
-  Serial.print(4.2);
-  Serial.print(",");
-
-  Serial.print("Current:");
-  Serial.println(vbatt, 3);
+  // Print this information to the user
+  Serial.print("The battery voltage is ");
+  Serial.print(vbatt);
+  Serial.print("V which is ");
+  Serial.print(stateOfCharge);
+  Serial.print("% charged");
+  Serial.println();
   delay(1000);
 }

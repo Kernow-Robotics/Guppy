@@ -154,3 +154,4 @@ cython_debug/
 .micropico
 
 .vscode/tasks.json
+.DS_Store
