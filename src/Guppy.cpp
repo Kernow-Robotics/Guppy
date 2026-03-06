@@ -18,10 +18,10 @@
 #define pinServo1 3
 #define pinServo2 4
 #define pinServo3 5
-#define pinM0a 10
-#define pinM0b 11
-#define pinM1a 8
-#define pinM1b 9
+#define pinM0a 8
+#define pinM0b 9
+#define pinM1a 10
+#define pinM1b 11
 #define pinLED 20
 #define pinVbatt 29
 #define pinSPI_CE 19
@@ -69,18 +69,18 @@ void Motor::_rawPower(float power)
 
   if (pwmPower == 0)
   {
-    digitalWrite(_pinA, LOW);
-    digitalWrite(_pinB, LOW);
+    digitalWrite(_pinA, HIGH);
+    digitalWrite(_pinB, HIGH);
   }
   else if (pwmPower > 0)
   {
-    digitalWrite(_pinB, LOW);
-    analogWrite(_pinA, pwmPower);
+    analogWrite(_pinB, (255-pwmPower));
+    digitalWrite(_pinA, HIGH);
   }
   else if (pwmPower < 0)
   {
-    digitalWrite(_pinA, LOW);
-    analogWrite(_pinB, abs(pwmPower));
+    analogWrite(_pinA, (255-abs(pwmPower)));
+    digitalWrite(_pinB, HIGH);
   }
 }
 
