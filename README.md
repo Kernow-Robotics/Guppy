@@ -4,6 +4,19 @@ A small low-cost robot platform for research, education, and entertainment.
 
 This library provides a simple Arduino interface for the Guppy robot from Kernow Robotics, including motor control, onboard LED feedback, battery monitoring, and nRF24 radio communication.
 
+## Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [API Reference](#api-reference)
+  - [Motor](#motor)
+  - [Guppy](#guppy)
+- [Example](#example)
+- [Notes](#notes)
+- [License](#license)
+
 ## Features
 
 - Smooth DC motor speed control with safe power ramping
@@ -22,7 +35,11 @@ This library provides a simple Arduino interface for the Guppy robot from Kernow
 
 ## Installation
 
-Install the library into the Arduino IDE using the standard library installation workflow, or clone this repository to the Arduino libraries folder using `git clone https://github.com/Kernow-Robotics/Guppy`
+Install the library into the Arduino IDE using the standard library installation workflow, or clone this repository to the Arduino libraries folder using:
+
+```bash
+git clone https://github.com/Kernow-Robotics/Guppy
+```
 
 ## Quick Start
 
@@ -48,101 +65,99 @@ void loop() {
 
 ### Motor
 
-The `Motor` class is used internally by `Guppy` and can also be used directly if custom motor wiring is required.
+The `Motor` class is used internally by `Guppy` and can also be used directly for custom motor wiring.
 
-#### Motor(int pinA, int pinB)
+> #### `Motor(int pinA, int pinB)`
+> **Purpose:** Create a motor controller for a pair of drive pins.
+> 
+> **Parameters:**
+> - `pinA` — PWM/drive pin for forward motor direction
+> - `pinB` — PWM/drive pin for reverse motor direction
+> 
+> **Behavior:** Configures both motor pins as outputs.
 
-Constructor.
-- `pinA`: PWM/drive pin for forward motor direction
-- `pinB`: PWM/drive pin for reverse motor direction
-
-The constructor configures both motor pins as outputs.
-
-#### void power(float power)
-
-Sets the target motor power level.
-- `power`: value between `-5.0` and `5.0`
-
-The motor will not jump to the target power immediately. Instead, the internal update loop ramps the actual output smoothly toward the setpoint.
+> #### `void power(float power)`
+> **Purpose:** Set the target motor power.
+> 
+> **Parameters:**
+> - `power` — motor power between `-5.0` and `5.0`
+> 
+> **Behavior:** The value is stored as a setpoint, and the actual motor output ramps smoothly toward that target.
 
 ### Guppy
 
 The main library class for controlling the Guppy robot.
 
-#### Guppy()
+> #### `Guppy()`
+> **Purpose:** Construct the robot controller.
+> 
+> **Behavior:** Initializes motor objects, radio support, and onboard GPIO pins.
 
-Constructor.
-Initializes the robot pins, motor objects, radio object, and onboard peripherals.
+> #### `void begin()`
+> **Purpose:** Initialize SPI, serial logging, and battery input.
+> 
+> **Behavior:** Performs initial hardware setup and flashes a startup heartbeat.
 
-#### void begin()
+> #### `void startBackgroundServices()`
+> **Purpose:** Start the secondary core and periodic motor update loop.
+> 
+> **Behavior:** Must be called after `begin()` to enable smooth motor ramping.
 
-Initializes SPI, serial output, and performs an initial battery voltage read.
-Also flashes a brief LED heartbeat.
+> #### `void motorDrive(float power0, float power1)`
+> **Purpose:** Set the target power for both drive motors.
+> 
+> **Parameters:**
+> - `power0` — target power for `m0`
+> - `power1` — target power for `m1`
+> 
+> **Behavior:** Power values are clamped to `-5.0`..`5.0`.
 
-#### void startBackgroundServices()
+> #### `void initRadio()`
+> **Purpose:** Initialize the nRF24 radio transceiver.
 
-Launches the secondary core and starts the periodic motor update timer.
-This method must be called after `begin()` to enable smooth motor ramping.
+> #### `void startListening(uint8_t address[6])`
+> **Purpose:** Begin listening for radio packets on a 6-byte address.
 
-#### void motorDrive(float power0, float power1)
+> #### `void stopListening()`
+> **Purpose:** Stop radio receive mode.
 
-Sets target power for both drive motors.
-- `power0`: target power for motor `m0`
-- `power1`: target power for motor `m1`
+> #### `void send(String message, uint8_t address[6])`
+> **Purpose:** Transmit a text message over the radio.
+> 
+> **Parameters:**
+> - `message` — Arduino `String` payload
+> - `address` — 6-byte radio address
 
-Values are clamped to the valid range `-5.0` to `5.0`.
+> #### `String receive()`
+> **Purpose:** Read a received radio message.
+> 
+> **Returns:** Received message or an empty string when no packet is available.
 
-#### void initRadio()
+> #### `void lightOn()`
+> **Purpose:** Turn the onboard LED on.
 
-Initializes the nRF24 radio transceiver.
+> #### `void lightOff()`
+> **Purpose:** Turn the onboard LED off.
 
-#### void startListening(uint8_t address[6])
+> #### `void heartbeat()`
+> **Purpose:** Play a short LED blink pattern to show normal operation.
 
-Begins radio receive mode on the specified 6-byte address.
+> #### `void errorState()`
+> **Purpose:** Play a longer LED blink pattern to show an error.
 
-#### void stopListening()
+> #### `float updateVbatt()`
+> **Purpose:** Read and filter the battery voltage.
+> 
+> **Returns:** Filtered battery voltage in volts.
 
-Stops the radio from listening for incoming packets.
-
-#### void send(String message, uint8_t address[6])
-
-Sends a text message to a remote radio address.
-- `message`: Arduino `String` to transmit
-- `address`: 6-byte radio address
-
-#### String receive()
-
-Returns the latest received radio message, or an empty string if no packet is available.
-
-#### void lightOn()
-
-Turns the onboard LED on.
-
-#### void lightOff()
-
-Turns the onboard LED off.
-
-#### void heartbeat()
-
-Plays a short LED blink pattern to indicate normal operation.
-
-#### void errorState()
-
-Plays a longer LED blink pattern to indicate an error condition.
-
-#### float updateVbatt()
-
-Reads the analog battery voltage pin, filters the readings, and updates the internal battery voltage estimate.
-Returns the filtered battery voltage in volts.
-
-#### int voltageToSOC(float voltage)
-
-Converts a battery voltage value into a state-of-charge percentage using a predefined lookup table and linear interpolation.
-Returns a value from `0` to `100`.
+> #### `int voltageToSOC(float voltage)`
+> **Purpose:** Convert a voltage reading to battery state-of-charge.
+> 
+> **Returns:** Percentage from `0` to `100`.
 
 ## Example
 
-See `examples/Minimal/Minimal.ino` for a complete motor drive example. That sketch demonstrates initializing the library, starting background services, and smoothly driving the two motors.
+See `examples/Minimal/Minimal.ino` for a complete motor drive example. That sketch demonstrates initializing the library, starting background services, and smoothly driving both motors.
 
 ## Notes
 
