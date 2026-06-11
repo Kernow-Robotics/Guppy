@@ -4,8 +4,7 @@ Guppy guppy;
 
 void setup() {
   guppy.begin();
-  guppy.startBackgroundServices();
-
+  
   pinMode(20, OUTPUT);
 }
 

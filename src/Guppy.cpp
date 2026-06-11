@@ -151,6 +151,7 @@ void Guppy::begin()
   _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
   _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
   _vbatt = 2.0 * ((3.3 / 1024.0) * analogRead(pinVbatt));
+  startBackgroundServices();
 }
 // --------Background services--------
 void Guppy::startBackgroundServices()

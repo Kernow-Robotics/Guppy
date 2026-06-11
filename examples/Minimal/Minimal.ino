@@ -4,7 +4,6 @@ Guppy guppy;
 
 void setup() {
   guppy.begin();
-  guppy.startBackgroundServices();
 }
 
 void loop() {
