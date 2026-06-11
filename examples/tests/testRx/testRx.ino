@@ -6,7 +6,7 @@ uint8_t myAddress[6] = "00002";
 
 void setup() {
   guppy.begin();
-  guppy.startBackgroundServices();
+  
   guppy.initRadio();
   guppy.startListening(myAddress);
 }
